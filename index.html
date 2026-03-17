@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SalesFlow CRM • dark/light · commission</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* light mode (default) */
+    body {
+      background: linear-gradient(145deg, #f1f5f9 0%, #e6edf5 100%);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #0b1e33;
+    }
+
+    /* dark mode class on body */
+    body.dark {
+      background: linear-gradient(145deg, #0f172a 0%, #081020 100%);
+      color: #e2e8f0;
+    }
+
+    /* main CRM card – light */
+    .crm-container {
+      max-width: 1440px;
+      width: 100%;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.6);
+      padding: 2rem 2rem 2.5rem;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    body.dark .crm-container {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(16px);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: 0 25px 50px -12px #020617;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      color: #0f2b43;
+    }
+    body.dark h1 {
+      color: #f1f5f9;
+    }
+    h1 i {
+      color: #f97316;
+      font-size: 2rem;
+    }
+
+    /* theme toggle button */
+    .theme-toggle {
+      margin-left: auto;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 3rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #f97316;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .theme-toggle i {
+      font-size: 1.4rem;
+    }
+    body.dark .theme-toggle {
+      background: #1e293b;
+      border-color: #f97316;
+      color: #fcd34d;
+    }
+
+    /* commission panel – light/orange */
+    .commission-panel {
+      background: linear-gradient(105deg, #fff6ed 0%, #fff0e0 100%);
+      border-left: 6px solid #f97316;
+      border-radius: 1.5rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px -8px rgba(249,115,22,0.2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    body.dark .commission-panel {
+      background: #1e293b;
+      border-left-color: #f97316;
+      box-shadow: 0 8px 20px -8px #f97316;
+    }
+    .commission-left h3 {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #7b4a1e;
+    }
+    body.dark .commission-left h3 {
+      color: #fcd34d;
+    }
+    .commission-left p {
+      color: #5a3e24;
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+    body.dark .commission-left p {
+      color: #cbd5e1;
+    }
+    .commission-highlight {
+      background: #f97316;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      font-size: 2.2rem;
+      line-height: 1;
+      box-shadow: 0 10px 15px -8px #f97316;
+      text-align: center;
+    }
+    .commission-highlight small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      display: block;
+      color: #ffe6d5;
+    }
+    .progress-wrapper {
+      min-width: 220px;
+      margin-top: 0.5rem;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #7b4a1e;
+      font-weight: 500;
+    }
+    body.dark .progress-label {
+      color: #cbd5e1;
+    }
+    .progress-bg {
+      background: #fcd9b6;
+      height: 12px;
+      border-radius: 30px;
+      margin-top: 4px;
+      width: 100%;
+    }
+    body.dark .progress-bg {
+      background: #334155;
+    }
+    .progress-fill {
+      background: #f97316;
+      height: 12px;
+      border-radius: 30px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* KPI cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .kpi-item {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.5rem 0.8rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+    body.dark .kpi-item {
+      background: #1e293b;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+    .kpi-item i {
+      font-size: 2rem;
+      background: #f1f5f9;
+      padding: 0.6rem;
+      border-radius: 2rem;
+      color: #f97316;
+      margin-bottom: 0.75rem;
+    }
+    body.dark .kpi-item i {
+      background: #0f172a;
+    }
+    .kpi-item h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0.25rem 0;
+      color: #1e293b;
+    }
+    body.dark .kpi-item h2 {
+      color: #f1f5f9;
+    }
+    .kpi-item p {
+      color: #64748b;
+      font-weight: 500;
+    }
+    body.dark .kpi-item p {
+      color: #94a3b8;
+    }
+
+    /* filter bar + badges */
+    .feature-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      align-items: center;
+    }
+    .feature-badge {
+      background: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 3rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.02);
+      border: 1px solid #e9eef3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    body.dark .feature-badge {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+    .feature-badge i {
+      color: #f97316;
+    }
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      background: white;
+      padding: 0.25rem;
+      border-radius: 3rem;
+      border: 1px solid #e2e8f0;
+    }
+    body.dark .filter-group {
+      background: #0f172a;
+      border-color: #334155;
+    }
+    .filter-group button {
+      background: transparent;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 3rem;
+      font-weight: 500;
+      color: #475569;
+      cursor: pointer;
+    }
+    body.dark .filter-group button {
+      color: #94a3b8;
+    }
+    .filter-group button.active-filter {
+      background: #f97316;
+      color: white;
+    }
+    body.dark .filter-group button.active-filter {
+      color: white;
+    }
+
+    /* add form */
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      background: white;
+      padding: 1rem 1.2rem;
+      border-radius: 3rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 12px -12px rgba(0,0,0,0.2);
+    }
+    body.dark .form-row {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    .form-row input, .form-row select {
+      padding: 0.7rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 2.5rem;
+      background: #f8fafc;
+      font-size: 0.9rem;
+      min-width: 140px;
+      flex: 1 0 auto;
+      outline: none;
+    }
+    body.dark .form-row input, body.dark .form-row select {
+      background: #0f172a;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    .form-row input:focus, .form-row select:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+    }
+    .btn-icon {
+      background: #f97316;
+      border: none;
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 42px;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 14px -8px #f97316;
+    }
+    .btn-icon:hover {
+      background: #e25f0c;
+    }
+    .btn-icon.export {
+      background: #1e293b;
+      box-shadow: none;
+      width: auto;
+      padding: 0 1.5rem;
+      gap: 0.5rem;
+    }
+    body.dark .btn-icon.export {
+      background: #f97316;
+      color: #0f172a;
+    }
+
+    /* table */
+    .table-wrapper {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 0.2rem 0 1.5rem 0;
+      margin: 1.5rem 0 2rem 0;
+      border: 1px solid #edf2f7;
+      overflow-x: auto;
+    }
+    body.dark .table-wrapper {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+    th {
+      text-align: left;
+      padding: 1.2rem 1rem 0.8rem 1.5rem;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid #e9edf2;
+    }
+    body.dark th {
+      color: #94a3b8;
+      border-bottom-color: #334155;
+    }
+    td {
+      padding: 1rem 1rem 1rem 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    body.dark td {
+      color: #e2e8f0;
+      border-bottom-color: #334155;
+    }
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-right: 4px;
+    }
+    .dot-green { background: #22c55e; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #facc15; }
+    .dot-orange { background: #f97316; }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.1rem;
+      margin: 0 3px;
+      cursor: pointer;
+      color: #64748b;
+      padding: 5px;
+    }
+    body.dark .action-btn {
+      color: #94a3b8;
+    }
+    .action-btn:hover {
+      color: #f97316;
+    }
+    .crm-link {
+      color: #1e293b;
+      text-decoration: none;
+      background: #f1f5f9;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    body.dark .crm-link {
+      background: #0f172a;
+      color: #cbd5e1;
+    }
+
+    /* chart area */
+    .chart-area {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.8rem 1.5rem;
+      border: 1px solid #edf2f7;
+    }
+    body.dark .chart-area {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    canvas { max-height: 220px; width: 100% !important; }
+
+    @media (max-width: 750px) {
+      .crm-container { padding: 1.5rem; }
+      .commission-panel { flex-direction: column; align-items: start; gap: 1rem; }
+      .form-row input, .form-row select { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="crm-container">
+  <!-- title + theme toggle -->
+  <div style="display: flex; align-items: center; gap: 1rem;">
+    <h1><i class="fas fa-chart-line"></i> SalesFlow · commission hub</h1>
+    <div class="theme-toggle" id="themeToggle" title="toggle dark/light mode">
+      <i class="fa-regular fa-sun"></i><i class="fa-regular fa-moon"></i>
+    </div>
+  </div>
+
+  <!-- commission panel (orange) -->
+  <div class="commission-panel">
+    <div class="commission-left">
+      <h3><i class="fas fa-circle-dollar-to-slot" style="margin-right: 8px;"></i>commission (success only)</h3>
+      <p>✅ only <strong>green (successful)</strong> count toward target</p>
+      <p>📅 monthly target: 8 successful · after 8 = 750 PHP each</p>
+      <p>8✅ = 6000 PHP &nbsp; 12✅ = 9000 PHP &nbsp; 20✅ = 15000 PHP</p>
+    </div>
+    <div class="commission-highlight">
+      <span id="commission">0 PHP</span>
+      <small>this month</small>
+    </div>
+    <div class="progress-wrapper">
+      <div class="progress-label">
+        <span><i class="fa-regular fa-circle-check" style="color:#f97316;"></i> success / target</span>
+        <span id="successCount">0</span><span>/8</span>
+      </div>
+      <div class="progress-bg"><div class="progress-fill" id="progressBar" style="width:0%;"></div></div>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-grid">
+    <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2 id="week">0</h2><p>this week</p></div>
+    <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2 id="month">0</h2><p>this month</p></div>
+    <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2 id="year">0</h2><p>this year</p></div>
+  </div>
+
+  <!-- feature bar: filter & badges -->
+  <div class="feature-bar">
+    <div class="feature-badge"><i class="fa-regular fa-clock"></i> pending (orange) = no-show</div>
+    <div class="feature-badge"><i class="fa-regular fa-thumbs-up"></i> 8 success target</div>
+    <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: <span id="topSource">-</span></div>
+    <div style="flex:1"></div>
+    <div class="filter-group" id="filterGroup">
+      <button class="active-filter" data-filter="all">All</button>
+      <button data-filter="green">✅ success</button>
+      <button data-filter="yellow">🔁 rebook</button>
+      <button data-filter="orange">⏳ no show</button>
+    </div>
+  </div>
+
+  <!-- add appointment form (icon style) -->
+  <div class="form-row">
+    <input id="client" placeholder="Client name" value="">
+    <input type="date" id="date">
+    <select id="industry"><option value="">Industry</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select>
+    <select id="source"><option value="">Lead source</option><option>Cold Call</option><option>LinkedIn</option><option>Email</option><option>Referral</option></select>
+    <select id="status">
+      <option value="green">✅ successful</option>
+      <option value="yellow">🔁 rebook</option>
+      <option value="orange">⏳ no show (pending)</option>
+    </select>
+    <input id="crm" placeholder="CRM link (https://...)">
+    <input id="notes" placeholder="notes">
+    <button class="btn-icon" onclick="add()" title="add / save"><i class="fa-solid fa-plus"></i></button>
+  </div>
+
+  <!-- export + reset filter -->
+  <div style="display: flex; gap: 8px; margin-bottom: 0.5rem;">
+    <button class="btn-icon export" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> export .csv</button>
+    <button class="btn-icon" style="background:#334155;" onclick="clearCompletedFilter()" title="reset filter"><i class="fa-solid fa-filter-circle-xmark"></i></button>
+  </div>
+
+  <!-- table -->
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead>
+      <tbody id="table"></tbody>
+    </table>
+  </div>
+
+  <!-- chart + extra summary -->
+  <div class="chart-area">
+    <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
+      <span><i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> monthly trend</span>
+      <span class="feature-badge" style="padding:0.3rem 1rem;"><i class="fa-regular fa-building"></i> industry count: <span id="industrySummary">-</span></span>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // dark mode initialization & toggle
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    // check localStorage
+    if (localStorage.getItem('darkMode') === 'true') {
+      body.classList.add('dark');
+    }
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark');
+      localStorage.setItem('darkMode', body.classList.contains('dark'));
+    });
+  })();
+
+  let editIndex = null;
+  let data = JSON.parse(localStorage.getItem("appointments")) || [];
+  // migrate old red to orange
+  data = data.map(item => {
+    if (item.status === "red") item.status = "orange";
+    return item;
+  });
+  save();
+
+  let currentFilter = "all";
+
+  function save() {
+    localStorage.setItem("appointments", JSON.stringify(data));
+  }
+
+  function getSuccessfulThisMonth() {
+    const today = new Date();
+    return data.filter(a => {
+      const d = new Date(a.date);
+      return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear() && a.status === "green";
+    }).length;
+  }
+
+  function updateCommission() {
+    const successMonth = getSuccessfulThisMonth();
+    const commission = successMonth >= 8 ? successMonth * 750 : 0;
+    document.getElementById("commission").innerText = commission + " PHP";
+    const percent = Math.min((successMonth / 8) * 100, 100);
+    document.getElementById("progressBar").style.width = percent + "%";
+    document.getElementById("successCount").innerText = successMonth;
+  }
+
+  function getStats() {
+    const today = new Date();
+    let week = 0, month = 0, year = 0;
+    data.forEach(a => {
+      const d = new Date(a.date);
+      if (d.getFullYear() === today.getFullYear()) year++;
+      if (d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()) month++;
+      // rough week (based on week number)
+      const oneJan = new Date(d.getFullYear(),0,1);
+      const weekNumber = Math.ceil((((d - oneJan) / 86400000) + oneJan.getDay()+1)/7);
+      const currentWeek = Math.ceil((((today - new Date(today.getFullYear(),0,1)) / 86400000)+1)/7);
+      if (d.getFullYear() === today.getFullYear() && weekNumber === currentWeek) week++;
+    });
+    return { week, month, year };
+  }
+
+  function updateStats() {
+    const s = getStats();
+    document.getElementById("week").innerText = s.week;
+    document.getElementById("month").innerText = s.month;
+    document.getElementById("year").innerText = s.year;
+  }
+
+  function updateSummaryFeatures() {
+    if (!data.length) {
+      document.getElementById("topSource").innerText = '-';
+      document.getElementById("industrySummary").innerText = '-';
+      return;
+    }
+    const sources = data.map(d => d.source).filter(Boolean);
+    const freq = sources.reduce((acc, s) => (acc[s] = (acc[s]||0)+1, acc), {});
+    const top = Object.keys(freq).sort((a,b) => freq[b]-freq[a])[0];
+    document.getElementById("topSource").innerText = top || '-';
+
+    const industryCnt = data.filter(d => d.industry).length;
+    document.getElementById("industrySummary").innerText = industryCnt + ' industries';
+  }
+
+  function render() {
+    const filtered = currentFilter === "all" ? data : data.filter(a => a.status === currentFilter);
+    let tbody = document.getElementById("table");
+    tbody.innerHTML = "";
+    filtered.forEach((a, idx) => {
+      const originalIndex = data.findIndex(item => 
+        item.client === a.client && item.date === a.date && item.status === a.status && item.notes === a.notes
+      );
+      const statusClass = a.status === "green" ? "dot-green" : (a.status === "yellow" ? "dot-yellow" : "dot-orange");
+      tbody.innerHTML += `<tr>
+        <td><span class="status-dot ${statusClass}"></span></td>
+        <td>${a.client || ''}</td>
+        <td>${a.date || ''}</td>
+        <td>${a.industry || '-'}</td>
+        <td>${a.source || '-'}</td>
+        <td>${a.crm ? `<a href="${a.crm}" target="_blank" class="crm-link"><i class="fa-regular fa-link"></i> crm</a>` : '-'}</td>
+        <td>${a.notes || ''}</td>
+        <td>
+          <button class="action-btn" onclick="edit(${originalIndex})" title="edit"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="action-btn" onclick="del(${originalIndex})" title="delete"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`;
+    });
+    updateStats();
+    updateCommission();
+    updateChart();
+    updateSummaryFeatures();
+  }
+
+  function add() {
+    let client = document.getElementById("client").value.trim();
+    let date = document.getElementById("date").value;
+    let industry = document.getElementById("industry").value;
+    let source = document.getElementById("source").value;
+    let status = document.getElementById("status").value;
+    let crm = document.getElementById("crm").value.trim();
+    let notes = document.getElementById("notes").value.trim();
+    if (!client || !date) { alert("Client and date required"); return; }
+
+    let obj = { client, date, industry, source, status, crm, notes };
+
+    if (editIndex === null) {
+      data.push(obj);
+    } else {
+      data[editIndex] = obj;
+      editIndex = null;
+    }
+    save();
+    clearForm();
+    render();
+  }
+
+  function clearForm() {
+    document.getElementById("client").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("industry").value = "";
+    document.getElementById("source").value = "";
+    document.getElementById("status").value = "green";
+    document.getElementById("crm").value = "";
+    document.getElementById("notes").value = "";
+  }
+
+  function edit(i) {
+    let a = data[i];
+    document.getElementById("client").value = a.client || "";
+    document.getElementById("date").value = a.date || "";
+    document.getElementById("industry").value = a.industry || "";
+    document.getElementById("source").value = a.source || "";
+    document.getElementById("status").value = a.status || "green";
+    document.getElementById("crm").value = a.crm || "";
+    document.getElementById("notes").value = a.notes || "";
+    editIndex = i;
+  }
+
+  function del(i) {
+    data.splice(i, 1);
+    save();
+    if (editIndex === i) editIndex = null;
+    render();
+  }
+
+  let chartInstance = null;
+  function updateChart() {
+    let months = new Array(12).fill(0);
+    data.forEach(a => {
+      let d = new Date(a.date);
+      if (!isNaN(d)) months[d.getMonth()]++;
+    });
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(document.getElementById("chart"), {
+      type: 'bar',
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+        datasets: [{
+          label: "appointments",
+          data: months,
+          backgroundColor: "#f97316",
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+  }
+
+  function exportCSV() {
+    let csv = "Client,Date,Industry,Source,Status,CRM,Notes\n";
+    data.forEach(a => {
+      csv += `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes}\n`;
+    });
+    let blob = new Blob([csv], {type: 'text/csv'});
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "appointments.csv";
+    a.click();
+  }
+
+  // filter buttons
+  document.querySelectorAll('#filterGroup button').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active-filter'));
+      this.classList.add('active-filter');
+      currentFilter = this.dataset.filter;
+      render();
+    });
+  });
+  function clearCompletedFilter() {
+    document.querySelector('#filterGroup button[data-filter="all"]').click();
+  }
+
+  render();
+</script>
+</body>
+</html>
