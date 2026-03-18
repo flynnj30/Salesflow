@@ -3,975 +3,689 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SalesFlow CRM • dark/light · commission</title>
-  <!-- Font Awesome 6 (free) -->
+  <title>SalesFlow AI · chat‑style CRM</title>
+  <!-- Font Awesome 6 (free) & Chart.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ... (keep all existing styles from the original, they are excellent) ... */
     * {
-      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* light mode (default) */
     body {
-      background: linear-gradient(145deg, #f1f5f9 0%, #e6edf5 100%);
+      background: #f7f7f8;
       min-height: 100vh;
-      padding: 2rem 1.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #0b1e33;
+      transition: background 0.2s;
+      padding: 1rem;
     }
 
-    /* dark mode class on body */
     body.dark {
-      background: linear-gradient(145deg, #0f172a 0%, #081020 100%);
-      color: #e2e8f0;
+      background: #1a1a1c;
     }
 
-    /* main CRM card – light */
-    .crm-container {
-      max-width: 1440px;
+    /* main app wrapper */
+    .app-wrapper {
+      display: flex;
       width: 100%;
+      max-width: 1600px;
+      background: transparent;
+      gap: 1rem;
+      height: 95vh;
+      max-height: 95vh;
+    }
+
+    /* ========= SIDEBAR (fully functional) ========= */
+    .sidebar {
+      width: 280px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 1.25rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: width 0.25s ease, padding 0.2s ease;
+      overflow-x: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: 80px;
+      padding: 1.25rem 0.4rem;
+    }
+
+    body.dark .sidebar {
+      background: rgba(32, 33, 35, 0.85);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding: 0 0.5rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .logo-icon {
+      background: #f97316;
+      min-width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.3rem;
+    }
+
+    .logo-text {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #0f2b43;
+      white-space: nowrap;
+    }
+
+    body.dark .logo-text {
+      color: #f1f5f9;
+    }
+
+    .collapse-btn {
+      background: transparent;
+      border: none;
+      color: #f97316;
+      font-size: 1.4rem;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .collapse-btn:hover {
+      background: rgba(249,115,22,0.1);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0.7rem 1rem;
+      border-radius: 14px;
+      color: #3c4b5c;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: 0.1s;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    body.dark .nav-item {
+      color: #cbd5e1;
+    }
+
+    .nav-item i {
+      font-size: 1.3rem;
+      min-width: 28px;
+      color: #f97316;
+    }
+
+    .nav-item.active {
+      background: rgba(249,115,22,0.15);
+      color: #f97316;
+    }
+
+    .nav-item.active i {
+      color: #f97316;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .nav-item span:not(.icon-only) {
+      display: none;
+    }
+
+    .sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 0.7rem 0;
+    }
+
+    .feature-tag {
+      background: #f97316;
+      color: white;
+      font-size: 0.7rem;
+      border-radius: 40px;
+      padding: 0.2rem 0.7rem;
+      margin-left: auto;
+    }
+
+    .sidebar.collapsed .feature-tag {
+      display: none;
+    }
+
+    /* ========= MAIN PANEL (dynamic content) ========= */
+    .main-panel {
+      flex: 1;
       background: rgba(255,255,255,0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-radius: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.6);
-      padding: 2rem 2rem 2.5rem;
+      border-radius: 32px;
+      padding: 1.8rem 2rem;
       border: 1px solid rgba(255,255,255,0.6);
-    }
-    body.dark .crm-container {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(16px);
-      border-color: rgba(255,255,255,0.08);
-      box-shadow: 0 25px 50px -12px #020617;
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2);
+      overflow-y: auto;
+      scrollbar-width: thin;
     }
 
-    h1 {
-      font-size: 1.9rem;
+    body.dark .main-panel {
+      background: rgba(25, 26, 30, 0.85);
+      border-color: rgba(255,255,255,0.05);
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .main-header h1 {
+      font-size: 1.8rem;
       font-weight: 600;
       letter-spacing: -0.02em;
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 1.75rem;
       color: #0f2b43;
     }
-    body.dark h1 {
+
+    body.dark .main-header h1 {
       color: #f1f5f9;
     }
-    h1 i {
-      color: #f97316;
-      font-size: 2rem;
-    }
 
-    /* theme toggle button */
     .theme-toggle {
       margin-left: auto;
       background: rgba(249,115,22,0.15);
       border: 1px solid rgba(249,115,22,0.3);
       border-radius: 3rem;
-      padding: 0.4rem 0.6rem;
-      font-size: 1.4rem;
-      line-height: 1;
+      padding: 0.4rem 0.8rem;
+      font-size: 1.3rem;
       cursor: pointer;
       color: #f97316;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 0.3rem;
     }
-    .theme-toggle i {
-      font-size: 1.4rem;
-    }
-    body.dark .theme-toggle {
-      background: #1e293b;
-      border-color: #f97316;
-      color: #fcd34d;
+
+    /* Page content container (changes with navigation) */
+    .page-content {
+      animation: fade 0.2s ease;
     }
 
-    /* commission panel – light/orange */
+    @keyframes fade { from { opacity: 0.3; } to { opacity: 1; } }
+
+    /* Commission panel, KPI, table styles (reused) */
     .commission-panel {
-      background: linear-gradient(105deg, #fff6ed 0%, #fff0e0 100%);
+      background: linear-gradient(105deg, #fff3e5, #ffe8d6);
       border-left: 6px solid #f97316;
-      border-radius: 1.5rem;
+      border-radius: 1.8rem;
       padding: 1.5rem 2rem;
       margin-bottom: 2rem;
-      box-shadow: 0 8px 20px -8px rgba(249,115,22,0.2);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
     }
-    body.dark .commission-panel {
-      background: #1e293b;
-      border-left-color: #f97316;
-      box-shadow: 0 8px 20px -8px #f97316;
-    }
-    .commission-left h3 {
-      font-weight: 600;
-      font-size: 1.25rem;
-      color: #7b4a1e;
-    }
-    body.dark .commission-left h3 {
-      color: #fcd34d;
-    }
-    .commission-left p {
-      color: #5a3e24;
-      margin: 0.25rem 0;
-      font-size: 0.95rem;
-    }
-    body.dark .commission-left p {
-      color: #cbd5e1;
-    }
+    body.dark .commission-panel { background: #2a2c35; border-left-color: #f97316; }
+    .commission-left h3 { font-weight: 600; color: #7b4a1e; }
+    body.dark .commission-left h3 { color: #fcd34d; }
+    .commission-left p { color: #5a3e24; }
+    body.dark .commission-left p { color: #cbd5e1; }
     .commission-highlight {
-      background: #f97316;
-      color: white;
-      padding: 0.75rem 2rem;
-      border-radius: 3rem;
-      font-weight: 700;
-      font-size: 2.2rem;
-      line-height: 1;
-      box-shadow: 0 10px 15px -8px #f97316;
-      text-align: center;
+      background: #f97316; color: white; padding: 0.75rem 2rem; border-radius: 4rem;
+      font-weight: 700; font-size: 2.2rem; line-height: 1;
     }
-    .commission-highlight small {
-      font-size: 0.9rem;
-      font-weight: 400;
-      display: block;
-      color: #ffe6d5;
-    }
-    .progress-wrapper {
-      min-width: 220px;
-      margin-top: 0.5rem;
-    }
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: #7b4a1e;
-      font-weight: 500;
-    }
-    body.dark .progress-label {
-      color: #cbd5e1;
-    }
-    .progress-bg {
-      background: #fcd9b6;
-      height: 12px;
-      border-radius: 30px;
-      margin-top: 4px;
-      width: 100%;
-    }
-    body.dark .progress-bg {
-      background: #334155;
-    }
-    .progress-fill {
-      background: #f97316;
-      height: 12px;
-      border-radius: 30px;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+    .progress-wrapper { min-width: 200px; }
+    .progress-bg { background: #fcd9b6; height: 12px; border-radius: 30px; }
+    .progress-fill { background: #f97316; height: 12px; border-radius: 30px; width: 0%; }
+    body.dark .progress-bg { background: #334155; }
 
-    /* KPI cards */
     .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem;
     }
     .kpi-item {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 1.5rem 0.8rem;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-      border: 1px solid rgba(0,0,0,0.03);
+      background: white; border-radius: 1.8rem; padding: 1.2rem; text-align: center; border: 1px solid #edf2f7;
     }
-    body.dark .kpi-item {
-      background: #1e293b;
-      border-color: #334155;
-      color: #e2e8f0;
-    }
-    .kpi-item i {
-      font-size: 2rem;
-      background: #f1f5f9;
-      padding: 0.6rem;
-      border-radius: 2rem;
-      color: #f97316;
-      margin-bottom: 0.75rem;
-    }
-    body.dark .kpi-item i {
-      background: #0f172a;
-    }
-    .kpi-item h2 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin: 0.25rem 0;
-      color: #1e293b;
-    }
-    body.dark .kpi-item h2 {
-      color: #f1f5f9;
-    }
-    .kpi-item p {
-      color: #64748b;
-      font-weight: 500;
-    }
-    body.dark .kpi-item p {
-      color: #94a3b8;
-    }
+    body.dark .kpi-item { background: #1e293b; border-color: #334155; }
+    .kpi-item i { font-size: 1.8rem; background: #f1f5f9; padding: 0.6rem; border-radius: 2rem; color: #f97316; }
 
-    /* filter bar + badges + action buttons */
     .feature-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.75rem;
-      align-items: center;
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; align-items: center;
     }
     .feature-badge {
-      background: white;
-      padding: 0.5rem 1.2rem;
-      border-radius: 3rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.02);
-      border: 1px solid #e9eef3;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      background: white; padding: 0.5rem 1.2rem; border-radius: 3rem; font-size: 0.9rem;
+      border: 1px solid #e9eef3; display: flex; align-items: center; gap: 8px;
     }
-    body.dark .feature-badge {
-      background: #1e293b;
-      border-color: #334155;
-      color: #cbd5e1;
-    }
-    .feature-badge i {
-      color: #f97316;
-    }
+    body.dark .feature-badge { background: #1e293b; border-color: #334155; color: #cbd5e1; }
     .filter-group {
-      display: flex;
-      gap: 6px;
-      background: white;
-      padding: 0.25rem;
-      border-radius: 3rem;
-      border: 1px solid #e2e8f0;
+      display: flex; gap: 6px; background: white; padding: 0.25rem; border-radius: 3rem; border: 1px solid #e2e8f0;
     }
-    body.dark .filter-group {
-      background: #0f172a;
-      border-color: #334155;
-    }
+    body.dark .filter-group { background: #0f172a; border-color: #334155; }
     .filter-group button {
-      background: transparent;
-      border: none;
-      padding: 0.4rem 1rem;
-      border-radius: 3rem;
-      font-weight: 500;
-      color: #475569;
-      cursor: pointer;
+      background: transparent; border: none; padding: 0.4rem 1rem; border-radius: 3rem;
+      font-weight: 500; color: #475569; cursor: pointer;
     }
-    body.dark .filter-group button {
-      color: #94a3b8;
-    }
-    .filter-group button.active-filter {
-      background: #f97316;
-      color: white;
-    }
-    body.dark .filter-group button.active-filter {
-      color: white;
-    }
-    .action-button-group {
-        display: flex;
-        gap: 0.5rem;
-        margin-left: auto;
-    }
+    .filter-group button.active-filter { background: #f97316; color: white; }
+    .action-button-group { display: flex; gap: 0.5rem; margin-left: auto; }
     .btn-primary, .btn-secondary {
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 3rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
+      border: none; padding: 0.6rem 1.5rem; border-radius: 3rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;
     }
-    .btn-primary {
-        background: #f97316;
-        color: white;
-        box-shadow: 0 8px 14px -8px #f97316;
-    }
-    .btn-primary:hover {
-        background: #e25f0c;
-    }
-    .btn-secondary {
-        background: #1e293b;
-        color: white;
-    }
-    body.dark .btn-secondary {
-        background: #f97316;
-        color: #0f172a;
-    }
-    .btn-secondary:hover {
-        background: #334155;
-    }
-    body.dark .btn-secondary:hover {
-        background: #fb923c;
-    }
+    .btn-primary { background: #f97316; color: white; }
+    .btn-secondary { background: #1e293b; color: white; }
+    body.dark .btn-secondary { background: #f97316; color: #0f172a; }
 
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        backdrop-filter: blur(4px);
-    }
-    .modal.active {
-        display: flex;
-    }
-    .modal-content {
-        background: white;
-        border-radius: 2rem;
-        padding: 2rem;
-        max-width: 600px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 25px 50px -12px black;
-    }
-    body.dark .modal-content {
-        background: #1e293b;
-        border: 1px solid #334155;
-    }
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .modal-header h2 {
-        font-size: 1.5rem;
-        color: #0f2b43;
-    }
-    body.dark .modal-header h2 {
-        color: #f1f5f9;
-    }
-    .close-modal {
-        background: none;
-        border: none;
-        font-size: 1.8rem;
-        cursor: pointer;
-        color: #64748b;
-    }
-    .close-modal:hover {
-        color: #f97316;
-    }
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 0.3rem;
-        font-weight: 500;
-        color: #475569;
-        font-size: 0.9rem;
-    }
-    body.dark .form-group label {
-        color: #cbd5e1;
-    }
-    .form-group input, .form-group select {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 1.5rem;
-        background: #f8fafc;
-        font-size: 0.95rem;
-        outline: none;
-    }
-    body.dark .form-group input, body.dark .form-group select {
-        background: #0f172a;
-        border-color: #334155;
-        color: #f1f5f9;
-    }
-    .form-group input:focus, .form-group select:focus {
-        border-color: #f97316;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
-    }
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    /* table */
     .table-wrapper {
-      background: white;
-      border-radius: 1.8rem;
-      padding: 0.2rem 0 1.5rem 0;
-      margin: 1.5rem 0 2rem 0;
-      border: 1px solid #edf2f7;
-      overflow-x: auto;
+      background: white; border-radius: 1.8rem; padding: 0.2rem 0 1rem 0;
+      border: 1px solid #edf2f7; overflow-x: auto; margin: 1.5rem 0;
     }
-    body.dark .table-wrapper {
-      background: #1e293b;
-      border-color: #334155;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      white-space: nowrap;
-    }
-    th {
-      text-align: left;
-      padding: 1.2rem 1rem 0.8rem 1.5rem;
-      color: #64748b;
-      font-weight: 600;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      border-bottom: 1px solid #e9edf2;
-    }
-    body.dark th {
-      color: #94a3b8;
-      border-bottom-color: #334155;
-    }
-    td {
-      padding: 1rem 1rem 1rem 1.5rem;
-      border-bottom: 1px solid #f1f5f9;
-      color: #1e293b;
-    }
-    body.dark td {
-      color: #e2e8f0;
-      border-bottom-color: #334155;
-    }
-    /* Add subtle row striping */
-    tbody tr:nth-child(even) {
-        background-color: rgba(0,0,0,0.02);
-    }
-    body.dark tbody tr:nth-child(even) {
-        background-color: rgba(255,255,255,0.02);
-    }
+    body.dark .table-wrapper { background: #1e293b; border-color: #334155; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 1rem 1rem 0.8rem 1.5rem; color: #64748b; }
+    td { padding: 0.8rem 1rem 0.8rem 1.5rem; border-bottom: 1px solid #f1f5f9; }
+    body.dark td { border-bottom-color: #334155; color: #e2e8f0; }
 
-    .status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-right: 4px;
-    }
-    .dot-green { background: #22c55e; }
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #facc15; }
-    .dot-orange { background: #f97316; }
+    .status-dot { width: 12px; height: 12px; border-radius: 20px; display: inline-block; }
+    .dot-green { background: #22c55e; } .dot-yellow { background: #facc15; } .dot-orange { background: #f97316; }
 
-    .action-btn {
-      background: transparent;
-      border: none;
-      font-size: 1.1rem;
-      margin: 0 3px;
-      cursor: pointer;
-      color: #64748b;
-      padding: 5px;
-    }
-    body.dark .action-btn {
-      color: #94a3b8;
-    }
-    .action-btn:hover {
-      color: #f97316;
-    }
-    .crm-link {
-      color: #1e293b;
-      text-decoration: none;
-      background: #f1f5f9;
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    body.dark .crm-link {
-      background: #0f172a;
-      color: #cbd5e1;
-    }
-
-    /* chart area */
     .chart-area {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 1.8rem 1.5rem;
-      border: 1px solid #edf2f7;
+      background: white; border-radius: 1.8rem; padding: 1.5rem; border: 1px solid #edf2f7;
     }
-    body.dark .chart-area {
-      background: #1e293b;
-      border-color: #334155;
-    }
-    canvas { max-height: 220px; width: 100% !important; }
+    body.dark .chart-area { background: #1e293b; border-color: #334155; }
 
-    /* Toast notification */
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #1e293b;
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border-radius: 3rem;
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        z-index: 2000;
-    }
-    .toast.show {
-        transform: translateX(0);
-    }
-    .toast i {
-        color: #f97316;
-        font-size: 1.2rem;
-    }
+    /* modal & toast (unchanged) */
+    .modal { display: none; position: fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px);}
+    .modal.active { display:flex; }
+    .modal-content { background:white; border-radius:2rem; padding:2rem; max-width:600px; width:90%; max-height:90vh; overflow-y:auto; }
+    body.dark .modal-content { background:#1e293b; border:1px solid #334155; }
+    .form-group { margin-bottom:1rem; }
+    .form-group label { display:block; margin-bottom:0.3rem; color:#475569; }
+    body.dark .form-group label { color:#cbd5e1; }
+    .form-group input, .form-group select { width:100%; padding:0.8rem 1rem; border:1px solid #e2e8f0; border-radius:1.5rem; background:#f8fafc; }
+    body.dark .form-group input, body.dark .form-group select { background:#0f172a; color:#f1f5f9; border-color:#334155; }
+    .toast { position:fixed; bottom:20px; right:20px; background:#1e293b; color:white; padding:0.8rem 1.5rem; border-radius:3rem; display:flex; align-items:center; gap:0.8rem; transform:translateX(400px); transition:transform 0.3s; z-index:2000; }
+    .toast.show { transform:translateX(0); }
 
-    @media (max-width: 750px) {
-      .crm-container { padding: 1.5rem; }
-      .commission-panel { flex-direction: column; align-items: start; gap: 1rem; }
-      .action-button-group { margin-left: 0; width: 100%; justify-content: flex-end; }
+    /* page-specific cards for other sections */
+    .insight-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;
     }
+    .insight-card {
+      background: white; border-radius: 2rem; padding: 2rem 1.5rem; border: 1px solid #e9eef3; text-align: center;
+    }
+    body.dark .insight-card { background: #1e293b; border-color: #334155; }
+    .insight-card i { font-size: 2.5rem; color: #f97316; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
-<div class="crm-container">
-  <!-- title + theme toggle -->
-  <div style="display: flex; align-items: center; gap: 1rem;">
-    <h1><i class="fas fa-chart-line"></i> SalesFlow · commission hub</h1>
-    <div class="theme-toggle" id="themeToggle" title="toggle dark/light mode">
-      <i class="fa-regular fa-sun"></i><i class="fa-regular fa-moon"></i>
-    </div>
-  </div>
-
-  <!-- commission panel (orange) -->
-  <div class="commission-panel">
-    <div class="commission-left">
-      <h3><i class="fas fa-circle-dollar-to-slot" style="margin-right: 8px;"></i>commission (success only)</h3>
-      <p>✅ only <strong>green (successful)</strong> count toward target</p>
-      <p>📅 monthly target: 8 successful · after 8 = 750 PHP each</p>
-      <p>8✅ = 6000 PHP &nbsp; 12✅ = 9000 PHP &nbsp; 20✅ = 15000 PHP</p>
-    </div>
-    <div class="commission-highlight">
-      <span id="commission">0 PHP</span>
-      <small>this month</small>
-    </div>
-    <div class="progress-wrapper">
-      <div class="progress-label">
-        <span><i class="fa-regular fa-circle-check" style="color:#f97316;"></i> success / target</span>
-        <span id="successCount">0</span><span>/8</span>
+<div class="app-wrapper">
+  <!-- SIDEBAR WITH FUNCTIONAL BUTTONS (each leads to its own page) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-area">
+        <div class="logo-icon"><i class="fa-regular fa-message"></i></div>
+        <span class="logo-text">SalesFlow AI</span>
       </div>
-      <div class="progress-bg"><div class="progress-fill" id="progressBar" style="width:0%;"></div></div>
+      <button class="collapse-btn" id="collapseSidebarBtn"><i class="fa-solid fa-chevron-left"></i></button>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" id="nav-appointments"><i class="fa-regular fa-calendar-check"></i> <span>Appointments</span></button>
+      <button class="nav-item" id="nav-analytics"><i class="fa-regular fa-chart-bar"></i> <span>Analytics</span> <span class="feature-tag">new</span></button>
+      <button class="nav-item" id="nav-alerts"><i class="fa-regular fa-bell"></i> <span>Smart Alerts</span> <span class="feature-tag">beta</span></button>
+      <button class="nav-item" id="nav-sources"><i class="fa-regular fa-star"></i> <span>Top Sources</span></button>
+      <button class="nav-item" id="nav-noshow"><i class="fa-regular fa-clock"></i> <span>No‑show guard</span> <span class="feature-tag">+2</span></button>
+    </div>
+    <div style="margin-top: auto; padding:1rem 0.5rem; color:#94a3b8; font-size:0.85rem;">
+      <i class="fa-regular fa-circle-check" style="color:#22c55e;"></i> <span>8 success target</span>
     </div>
   </div>
 
-  <!-- KPI cards -->
-  <div class="kpi-grid">
-    <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2 id="week">0</h2><p>this week</p></div>
-    <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2 id="month">0</h2><p>this month</p></div>
-    <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2 id="year">0</h2><p>this year</p></div>
-  </div>
-
-  <!-- Consolidated feature bar: badges, filters, and action buttons -->
-  <div class="feature-bar">
-    <div class="feature-badge"><i class="fa-regular fa-clock"></i> pending (orange) = no-show</div>
-    <div class="feature-badge"><i class="fa-regular fa-thumbs-up"></i> 8 success target</div>
-    <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: <span id="topSource">-</span></div>
-
-    <div class="filter-group" id="filterGroup">
-      <button class="active-filter" data-filter="all">All</button>
-      <button data-filter="green">✅ success</button>
-      <button data-filter="yellow">🔁 rebook</button>
-      <button data-filter="orange">⏳ no show</button>
+  <!-- MAIN PANEL with dynamic page container -->
+  <div class="main-panel">
+    <div class="main-header">
+      <h1 id="page-title"><i class="fas fa-chart-line" style="color:#f97316;"></i> commission hub</h1>
+      <div class="theme-toggle" id="themeToggle"><i class="fa-regular fa-sun"></i><i class="fa-regular fa-moon"></i></div>
     </div>
 
-    <div class="action-button-group">
-        <button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New Appointment</button>
-        <button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button>
-        <button class="btn-secondary" onclick="clearCompletedFilter()" title="reset filter"><i class="fa-solid fa-filter-circle-xmark"></i> Clear Filter</button>
-    </div>
-  </div>
-
-  <!-- Table (now clean, without the old form) -->
-  <div class="table-wrapper">
-    <table>
-      <thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead>
-      <tbody id="table"></tbody>
-    </table>
-  </div>
-
-  <!-- chart + extra summary -->
-  <div class="chart-area">
-    <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
-      <span><i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> monthly trend</span>
-      <span class="feature-badge" style="padding:0.3rem 1rem;"><i class="fa-regular fa-building"></i> industry count: <span id="industrySummary">-</span></span>
-    </div>
-    <canvas id="chart"></canvas>
-  </div>
-</div>
-
-<!-- Modal for Add/Edit Form -->
-<div class="modal" id="appointmentModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="modalTitle">Add New Appointment</h2>
-      <button class="close-modal" id="closeModalBtn">&times;</button>
-    </div>
-    <div class="form-group">
-      <label for="client">Client Name *</label>
-      <input id="client" placeholder="e.g., Acme Corp" value="">
-    </div>
-    <div class="form-group">
-      <label for="date">Date *</label>
-      <input type="date" id="date">
-    </div>
-    <div class="form-group">
-      <label for="industry">Industry</label>
-      <select id="industry"><option value="">Select Industry</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select>
-    </div>
-    <div class="form-group">
-      <label for="source">Lead Source</label>
-      <select id="source"><option value="">Select Source</option><option>Cold Call</option><option>LinkedIn</option><option>Email</option><option>Referral</option></select>
-    </div>
-    <div class="form-group">
-      <label for="status">Status</label>
-      <select id="status">
-        <option value="green">✅ successful</option>
-        <option value="yellow">🔁 rebook</option>
-        <option value="orange">⏳ no show (pending)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="crm">CRM Link</label>
-      <input id="crm" placeholder="https://...">
-    </div>
-    <div class="form-group">
-      <label for="notes">Notes</label>
-      <input id="notes" placeholder="Additional info">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
-      <button class="btn-primary" onclick="saveAppointment()"><i class="fa-solid fa-save"></i> Save</button>
+    <!-- Dynamic page content will be injected here -->
+    <div id="page-content-container" class="page-content">
+      <!-- Default: Appointments page (fully functional) -->
     </div>
   </div>
 </div>
 
-<!-- Toast Notification -->
-<div class="toast" id="toast">
-    <i class="fa-regular fa-circle-check"></i>
-    <span id="toastMessage">Item saved</span>
-</div>
+<!-- Modals and toast (keep outside dynamic container) -->
+<div class="modal" id="appointmentModal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle">Add Appointment</h2><button class="close-modal" id="closeModalBtn">&times;</button></div><div class="form-group"><label>Client *</label><input id="client"></div><div class="form-group"><label>Date *</label><input type="date" id="date"></div><div class="form-group"><label>Industry</label><select id="industry"><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select></div><div class="form-group"><label>Source</label><select id="source"><option>Cold Call</option><option>LinkedIn</option><option>Referral</option><option>Email</option></select></div><div class="form-group"><label>Status</label><select id="status"><option value="green">✅ successful</option><option value="yellow">🔁 rebook</option><option value="orange">⏳ no show</option></select></div><div class="form-group"><label>CRM Link</label><input id="crm"></div><div class="form-group"><label>Notes</label><input id="notes"></div><div class="modal-actions"><button class="btn-secondary" id="cancelModalBtn">Cancel</button><button class="btn-primary" onclick="saveAppointment()">Save</button></div></div></div>
+<div class="toast" id="toast"><i class="fa-regular fa-circle-check"></i><span id="toastMessage">Saved</span></div>
 
 <script>
   (function() {
-    // dark mode initialization & toggle
+    // dark mode
     const body = document.body;
     const themeToggle = document.getElementById('themeToggle');
-    if (localStorage.getItem('darkMode') === 'true') {
-      body.classList.add('dark');
-    }
+    if (localStorage.getItem('darkMode') === 'true') body.classList.add('dark');
     themeToggle.addEventListener('click', () => {
       body.classList.toggle('dark');
       localStorage.setItem('darkMode', body.classList.contains('dark'));
     });
+
+    // sidebar collapse
+    const sidebar = document.getElementById('sidebar');
+    const collapseBtn = document.getElementById('collapseSidebarBtn');
+    collapseBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const icon = collapseBtn.querySelector('i');
+      if (sidebar.classList.contains('collapsed')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-left');
+      }
+    });
   })();
 
-  // --- Data Management with Unique IDs ---
+  // ---- DATA (shared across all pages) ----
   let data = JSON.parse(localStorage.getItem("appointments")) || [];
-  // migrate old red to orange and ensure all items have an ID
   data = data.map(item => {
     if (item.status === "red") item.status = "orange";
-    if (!item.id) {
-        item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    }
+    if (!item.id) item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2,9);
     return item;
   });
   save();
 
-  let editId = null; // Store the ID of the item being edited, not the index
+  let editId = null;
   let currentFilter = "all";
 
-  // --- UI Elements ---
+  // DOM elements
   const modal = document.getElementById('appointmentModal');
-  const openModalBtn = document.getElementById('openAddModalBtn');
+  const openModalBtn = document.getElementById('openAddModalBtn'); // will be redefined per page
   const closeModalBtn = document.getElementById('closeModalBtn');
   const cancelModalBtn = document.getElementById('cancelModalBtn');
-  const modalTitle = document.getElementById('modalTitle');
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toastMessage');
+  const pageContainer = document.getElementById('page-content-container');
+  const pageTitle = document.getElementById('page-title');
 
-  // --- Helper Functions ---
-  function showToast(message) {
-      toastMessage.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => {
-          toast.classList.remove('show');
-      }, 2500);
-  }
+  function showToast(msg) { toastMessage.innerText = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
+  function save() { localStorage.setItem("appointments", JSON.stringify(data)); }
 
-  function save() {
-    localStorage.setItem("appointments", JSON.stringify(data));
-  }
+  // Modal controls
+  closeModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
+  cancelModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
+  modal.addEventListener('click', (e)=> e.target===modal && modal.classList.remove('active'));
 
-  // --- Modal Controls ---
-  function openModal(isEdit = false) {
-      modal.classList.add('active');
-      if (!isEdit) {
-          modalTitle.textContent = 'Add New Appointment';
-          clearForm();
-          editId = null;
-      }
-  }
-
-  function closeModal() {
-      modal.classList.remove('active');
-      clearForm();
-      editId = null;
-  }
-
-  openModalBtn.addEventListener('click', () => openModal(false));
-  closeModalBtn.addEventListener('click', closeModal);
-  cancelModalBtn.addEventListener('click', closeModal);
-  // Close modal if clicked outside the content
-  modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-  });
-
-  // --- Form Functions ---
   function clearForm() {
-    document.getElementById("client").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("industry").value = "";
-    document.getElementById("source").value = "";
-    document.getElementById("status").value = "green";
-    document.getElementById("crm").value = "";
-    document.getElementById("notes").value = "";
+    document.getElementById("client").value=""; document.getElementById("date").value="";
+    document.getElementById("industry").value=""; document.getElementById("source").value="";
+    document.getElementById("status").value="green"; document.getElementById("crm").value=""; document.getElementById("notes").value="";
   }
 
-  function saveAppointment() {
+  window.saveAppointment = function() {
     let client = document.getElementById("client").value.trim();
     let date = document.getElementById("date").value;
-    let industry = document.getElementById("industry").value;
-    let source = document.getElementById("source").value;
-    let status = document.getElementById("status").value;
-    let crm = document.getElementById("crm").value.trim();
-    let notes = document.getElementById("notes").value.trim();
+    if (!client || !date) { showToast("Client and Date required!"); return; }
+    let obj = {
+      id: editId || (crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(36).substr(2,9)),
+      client, date,
+      industry: document.getElementById("industry").value,
+      source: document.getElementById("source").value,
+      status: document.getElementById("status").value,
+      crm: document.getElementById("crm").value.trim(),
+      notes: document.getElementById("notes").value.trim()
+    };
+    if (editId) {
+      let idx = data.findIndex(i=>i.id===editId);
+      if (idx>=0) data[idx]=obj;
+      showToast("Updated");
+    } else { data.push(obj); showToast("Added"); }
+    save(); modal.classList.remove('active');
+    renderCurrentPage(); // refresh current view
+  };
 
-    // Simple validation
-    if (!client || !date) {
-        showToast("Client and Date are required!");
-        // Optionally highlight the fields
-        if (!client) document.getElementById("client").style.borderColor = "red";
-        if (!date) document.getElementById("date").style.borderColor = "red";
-        return;
-    }
+  window.editAppointment = (id)=>{
+    let item = data.find(a=>a.id===id); if(!item) return;
+    document.getElementById("client").value=item.client||"";
+    document.getElementById("date").value=item.date||"";
+    document.getElementById("industry").value=item.industry||"";
+    document.getElementById("source").value=item.source||"";
+    document.getElementById("status").value=item.status||"green";
+    document.getElementById("crm").value=item.crm||"";
+    document.getElementById("notes").value=item.notes||"";
+    editId=id; document.getElementById('modalTitle').innerText='Edit Appointment'; modal.classList.add('active');
+  };
+  window.deleteAppointment = (id)=>{ if(confirm("Delete?")){ data=data.filter(i=>i.id!==id); save(); if(editId===id) editId=null; renderCurrentPage(); showToast("Deleted"); }};
 
-    let obj = { id: editId || (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2, 9)), client, date, industry, source, status, crm, notes };
-
-    if (editId === null) {
-      data.push(obj);
-      showToast("Appointment added");
-    } else {
-      const index = data.findIndex(item => item.id === editId);
-      if (index !== -1) {
-          data[index] = obj;
-      }
-      showToast("Appointment updated");
-      editId = null;
-    }
-    save();
-    closeModal();
-    render();
-  }
-
-  function editAppointment(id) {
-      const item = data.find(a => a.id === id);
-      if (!item) return;
-
-      document.getElementById("client").value = item.client || "";
-      document.getElementById("date").value = item.date || "";
-      document.getElementById("industry").value = item.industry || "";
-      document.getElementById("source").value = item.source || "";
-      document.getElementById("status").value = item.status || "green";
-      document.getElementById("crm").value = item.crm || "";
-      document.getElementById("notes").value = item.notes || "";
-
-      editId = id;
-      modalTitle.textContent = 'Edit Appointment';
-      modal.classList.add('active');
-  }
-
-  function deleteAppointment(id) {
-      if (confirm("Are you sure you want to delete this appointment?")) {
-          data = data.filter(item => item.id !== id);
-          save();
-          if (editId === id) editId = null;
-          render();
-          showToast("Appointment deleted");
-      }
-  }
-
-  // --- Calculation Functions (unchanged) ---
+  // Helper functions for stats (used by all pages)
   function getSuccessfulThisMonth() {
-    const today = new Date();
-    return data.filter(a => {
-      const d = new Date(a.date);
-      return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear() && a.status === "green";
-    }).length;
+    let today = new Date();
+    return data.filter(a=> a.status==="green" && new Date(a.date).getMonth()===today.getMonth() && new Date(a.date).getFullYear()===today.getFullYear()).length;
   }
-
-  function updateCommission() {
-    const successMonth = getSuccessfulThisMonth();
-    const commission = successMonth >= 8 ? successMonth * 750 : 0;
-    document.getElementById("commission").innerText = commission + " PHP";
-    const percent = Math.min((successMonth / 8) * 100, 100);
-    document.getElementById("progressBar").style.width = percent + "%";
-    document.getElementById("successCount").innerText = successMonth;
-  }
-
   function getStats() {
-    const today = new Date();
-    let week = 0, month = 0, year = 0;
-    data.forEach(a => {
-      const d = new Date(a.date);
-      if (d.getFullYear() === today.getFullYear()) year++;
-      if (d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()) month++;
-      // rough week (based on week number)
-      const oneJan = new Date(d.getFullYear(),0,1);
-      const weekNumber = Math.ceil((((d - oneJan) / 86400000) + oneJan.getDay()+1)/7);
-      const currentWeek = Math.ceil((((today - new Date(today.getFullYear(),0,1)) / 86400000)+1)/7);
-      if (d.getFullYear() === today.getFullYear() && weekNumber === currentWeek) week++;
+    let today=new Date(), week=0, month=0, year=0;
+    let oneJan = new Date(today.getFullYear(),0,1);
+    let currentWeek = Math.ceil((((today - oneJan) / 86400000) + oneJan.getDay()+1)/7);
+    data.forEach(a=>{
+      let d=new Date(a.date); if(isNaN(d)) return;
+      if(d.getFullYear()===today.getFullYear()) year++;
+      if(d.getMonth()===today.getMonth() && d.getFullYear()===today.getFullYear()) month++;
+      let w = Math.ceil((((d - new Date(d.getFullYear(),0,1)) / 86400000)+1)/7);
+      if(d.getFullYear()===today.getFullYear() && w===currentWeek) week++;
     });
-    return { week, month, year };
+    return {week,month,year};
   }
-
-  function updateStats() {
-    const s = getStats();
-    document.getElementById("week").innerText = s.week;
-    document.getElementById("month").innerText = s.month;
-    document.getElementById("year").innerText = s.year;
-  }
-
-  function updateSummaryFeatures() {
-    if (!data.length) {
-      document.getElementById("topSource").innerText = '-';
-      document.getElementById("industrySummary").innerText = '-';
-      return;
+  function calculateStreak() {
+    let greens = data.filter(a=>a.status==="green").map(a=>new Date(a.date).toDateString()).filter((v,i,s)=>s.indexOf(v)===i).sort((a,b)=>new Date(a)-new Date(b));
+    if(!greens.length) return 0;
+    let max=1, cur=1;
+    for(let i=1;i<greens.length;i++) {
+      let prev = new Date(greens[i-1]), curr = new Date(greens[i]);
+      let diff = (curr - prev)/(1000*3600*24);
+      if(diff===1) cur++; else { max=Math.max(max,cur); cur=1; }
     }
-    const sources = data.map(d => d.source).filter(Boolean);
-    const freq = sources.reduce((acc, s) => (acc[s] = (acc[s]||0)+1, acc), {});
-    const top = Object.keys(freq).sort((a,b) => freq[b]-freq[a])[0];
-    document.getElementById("topSource").innerText = top || '-';
-
-    const industryCnt = data.filter(d => d.industry).length;
-    document.getElementById("industrySummary").innerText = industryCnt + ' industries';
+    return Math.max(max,cur);
+  }
+  function conversionRate() {
+    let monthTotal = data.filter(a=>{ let d=new Date(a.date); return d.getMonth()===new Date().getMonth() && d.getFullYear()===new Date().getFullYear(); }).length;
+    let monthGreen = getSuccessfulThisMonth();
+    if(monthTotal===0) return '-';
+    return Math.round((monthGreen/monthTotal)*100)+'%';
   }
 
-  // --- Render Functions ---
-  function render() {
-    const filtered = currentFilter === "all" ? data : data.filter(a => a.status === currentFilter);
-    let tbody = document.getElementById("table");
-    tbody.innerHTML = "";
-    filtered.forEach((a) => {
-      const statusClass = a.status === "green" ? "dot-green" : (a.status === "yellow" ? "dot-yellow" : "dot-orange");
-      tbody.innerHTML += `<tr>
-        <td><span class="status-dot ${statusClass}" title="${a.status}"></span></td>
-        <td>${a.client || ''}</td>
-        <td>${a.date || ''}</td>
-        <td>${a.industry || '-'}</td>
-        <td>${a.source || '-'}</td>
-        <td>${a.crm ? `<a href="${a.crm}" target="_blank" class="crm-link"><i class="fa-regular fa-link"></i> crm</a>` : '-'}</td>
-        <td>${a.notes || ''}</td>
-        <td>
-          <button class="action-btn" onclick="editAppointment('${a.id}')" title="edit"><i class="fa-regular fa-pen-to-square"></i></button>
-          <button class="action-btn" onclick="deleteAppointment('${a.id}')" title="delete"><i class="fa-regular fa-trash-can"></i></button>
-        </td>
-      </tr>`;
+  // ----- PAGE RENDERING FUNCTIONS (each corresponds to a sidebar button) -----
+  function renderAppointmentsPage() {
+    let filtered = currentFilter==="all"? data : data.filter(a=>a.status===currentFilter);
+    let successMonth = getSuccessfulThisMonth();
+    let commission = successMonth>=8 ? successMonth*750 : 0;
+    let streak = calculateStreak();
+    let conv = conversionRate();
+    let sources = data.map(d=>d.source).filter(Boolean);
+    let freq = sources.reduce((acc,s)=>(acc[s]=(acc[s]||0)+1,acc),{});
+    let top = Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0];
+    let industryCnt = data.filter(d=>d.industry).length;
+
+    let html = `
+      <div class="commission-panel">
+        <div class="commission-left"><h3><i class="fas fa-circle-dollar-to-slot"></i> commission (success only)</h3><p>✅ only <strong>green</strong> count</p><p>📅 monthly target: 8 · after 8 = 750 PHP each</p></div>
+        <div class="commission-highlight"><span>${commission} PHP</span><small>this month</small></div>
+        <div class="progress-wrapper"><div class="progress-label"><span>✅ success/target</span><span>${successMonth}</span><span>/8</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min((successMonth/8)*100,100)}%;"></div></div></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${getStats().week}</h2><p>this week</p></div>
+        <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2>${getStats().month}</h2><p>this month</p></div>
+        <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2>${getStats().year}</h2><p>this year</p></div>
+      </div>
+      <div class="feature-bar">
+        <div class="feature-badge"><i class="fa-regular fa-clock"></i> pending = no-show</div>
+        <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: ${top||'-'}</div>
+        <div class="feature-badge"><i class="fa-regular fa-flag"></i> quota: ${successMonth}/8</div>
+        <div class="feature-badge"><i class="fa-regular fa-fire"></i> streak: ${streak}</div>
+        <div class="feature-badge"><i class="fa-regular fa-thumbs-up"></i> conv: ${conv}</div>
+        <div class="filter-group" id="filterGroup">
+          <button class="active-filter" data-filter="all">All</button><button data-filter="green">✅ success</button><button data-filter="yellow">🔁 rebook</button><button data-filter="orange">⏳ no show</button>
+        </div>
+        <div class="action-button-group">
+          <button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New</button>
+          <button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button>
+          <button class="btn-secondary" onclick="clearCompletedFilter()"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table><thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead><tbody id="tableBody">`;
+
+    filtered.forEach(a => {
+      let statusClass = a.status==="green"?"dot-green":(a.status==="yellow"?"dot-yellow":"dot-orange");
+      html += `<tr><td><span class="status-dot ${statusClass}"></span></td><td>${a.client||''}</td><td>${a.date||''}</td><td>${a.industry||'-'}</td><td>${a.source||'-'}</td><td>${a.crm?`<a href="${a.crm}" target="_blank" class="crm-link"><i class="fa-regular fa-link"></i> crm</a>`:'-'}</td><td>${a.notes||''}</td><td><button class="action-btn" onclick="editAppointment('${a.id}')"><i class="fa-regular fa-pen-to-square"></i></button><button class="action-btn" onclick="deleteAppointment('${a.id}')"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
     });
-    updateStats();
-    updateCommission();
-    updateChart();
-    updateSummaryFeatures();
-  }
 
-  // --- Chart (unchanged) ---
-  let chartInstance = null;
-  function updateChart() {
+    html += `</tbody></table></div>
+      <div class="chart-area">
+        <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;"><span><i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> monthly trend</span><span class="feature-badge">📊 industry count: ${industryCnt}</span></div>
+        <canvas id="chart"></canvas>
+      </div>`;
+
+    pageContainer.innerHTML = html;
+    pageTitle.innerHTML = '<i class="fas fa-chart-line" style="color:#f97316;"></i> commission hub · appointments';
+
+    // re-attach filter events
+    document.querySelectorAll('#filterGroup button').forEach(b=> b.addEventListener('click', function() {
+      document.querySelectorAll('#filterGroup button').forEach(bb=>bb.classList.remove('active-filter'));
+      this.classList.add('active-filter'); currentFilter = this.dataset.filter; renderAppointmentsPage();
+    }));
+
+    // re-attach new button
+    document.getElementById('openAddModalBtn').addEventListener('click', ()=>{ clearForm(); editId=null; document.getElementById('modalTitle').innerText='Add Appointment'; modal.classList.add('active'); });
+
+    // render chart
     let months = new Array(12).fill(0);
-    data.forEach(a => {
-      let d = new Date(a.date);
-      if (!isNaN(d)) months[d.getMonth()]++;
-    });
-    if (chartInstance) chartInstance.destroy();
-    chartInstance = new Chart(document.getElementById("chart"), {
-      type: 'bar',
-      data: {
-        labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-        datasets: [{
-          label: "appointments",
-          data: months,
-          backgroundColor: "#f97316",
-          borderRadius: 6
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
+    data.forEach(a=>{ let d=new Date(a.date); if(!isNaN(d)) months[d.getMonth()]++; });
+    if (window.appChart) window.appChart.destroy();
+    window.appChart = new Chart(document.getElementById("chart"), { type:'bar', data: { labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], datasets:[{ label:"appointments", data:months, backgroundColor:"#f97316", borderRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } } });
   }
 
-  // --- Export (unchanged) ---
-  function exportCSV() {
+  // Other pages (simplified, demonstrate that each button leads to a different page)
+  function renderAnalyticsPage() {
+    let successMonth = getSuccessfulThisMonth();
+    let total = data.length;
+    pageContainer.innerHTML = `
+      <div style="text-align:center; padding:3rem;"><i class="fa-regular fa-chart-bar" style="font-size:4rem; color:#f97316;"></i>
+      <h2 style="margin:1rem 0;">Analytics Dashboard</h2>
+      <div class="insight-grid">
+        <div class="insight-card"><i class="fa-regular fa-calendar"></i><h3>Total appointments</h3><p style="font-size:2rem;">${total}</p></div>
+        <div class="insight-card"><i class="fa-regular fa-face-smile"></i><h3>Successful</h3><p style="font-size:2rem;">${data.filter(d=>d.status==='green').length}</p></div>
+        <div class="insight-card"><i class="fa-regular fa-clock"></i><h3>No‑show rate</h3><p style="font-size:2rem;">${total? Math.round((data.filter(d=>d.status==='orange').length/total)*100) : 0}%</p></div>
+        <div class="insight-card"><i class="fa-regular fa-star"></i><h3>Conversion (month)</h3><p style="font-size:2rem;">${conversionRate()}</p></div>
+      </div>
+      <p style="margin-top:2rem; color:#64748b;">Detailed analytics coming soon.</p></div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> Analytics';
+  }
+  function renderAlertsPage() {
+    let now = new Date();
+    let upcoming = data.filter(a => new Date(a.date) > now && a.status !== 'green').length;
+    pageContainer.innerHTML = `
+      <div style="text-align:center; padding:3rem;"><i class="fa-regular fa-bell" style="font-size:4rem; color:#f97316;"></i>
+      <h2 style="margin:1rem 0;">Smart Alerts</h2>
+      <div class="insight-grid">
+        <div class="insight-card"><i class="fa-regular fa-hourglass-half"></i><h3>Pending follow‑ups</h3><p style="font-size:2rem;">${upcoming}</p></div>
+        <div class="insight-card"><i class="fa-regular fa-circle-exclamation"></i><h3>No‑show watch</h3><p style="font-size:2rem;">${data.filter(d=>d.status==='orange').length}</p></div>
+      </div>
+      <p style="margin-top:2rem;">Notifications and reminders will appear here.</p></div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-bell" style="color:#f97316;"></i> Smart Alerts';
+  }
+  function renderSourcesPage() {
+    let sources = data.map(d=>d.source).filter(Boolean);
+    let freq = sources.reduce((acc,s)=>(acc[s]=(acc[s]||0)+1,acc),{});
+    let entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+    pageContainer.innerHTML = `
+      <div style="padding:2rem;"><i class="fa-regular fa-star" style="font-size:3rem; color:#f97316; display:block; text-align:center;"></i>
+      <h2 style="text-align:center; margin:1rem;">Top Lead Sources</h2>
+      <div style="display:flex; flex-direction:column; gap:1rem; max-width:400px; margin:2rem auto;">
+        ${entries.map(([src,cnt]) => `<div style="display:flex; justify-content:space-between; background:white; padding:1rem 2rem; border-radius:3rem;"><span>${src}</span><strong>${cnt}</strong></div>`).join('')}
+      </div></div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-star" style="color:#f97316;"></i> Top Sources';
+  }
+  function renderNoshowPage() {
+    let noshows = data.filter(d=>d.status==='orange');
+    pageContainer.innerHTML = `
+      <div style="padding:2rem;"><i class="fa-regular fa-clock" style="font-size:3rem; color:#f97316; display:block; text-align:center;"></i>
+      <h2 style="text-align:center; margin:1rem;">No‑show guard</h2>
+      <p style="text-align:center; margin-bottom:2rem;">Clients marked as pending (orange) — follow up.</p>
+      <div style="background:white; border-radius:2rem; padding:1.5rem;">
+        ${noshows.length? noshows.map(n=>`<div style="padding:0.5rem 0;">🔸 ${n.client} — ${n.date}</div>`).join('') : '<p style="text-align:center;">All clear, no pending no-shows.</p>'}
+      </div></div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-clock" style="color:#f97316;"></i> No‑show guard';
+  }
+
+  function renderCurrentPage() {
+    if (currentPage === 'appointments') renderAppointmentsPage();
+    else if (currentPage === 'analytics') renderAnalyticsPage();
+    else if (currentPage === 'alerts') renderAlertsPage();
+    else if (currentPage === 'sources') renderSourcesPage();
+    else if (currentPage === 'noshow') renderNoshowPage();
+  }
+
+  // Navigation: set active class and render corresponding page
+  let currentPage = 'appointments';
+  function setActiveNav(pageId) {
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`nav-${pageId}`).classList.add('active');
+    currentPage = pageId;
+    renderCurrentPage();
+  }
+
+  document.getElementById('nav-appointments').addEventListener('click', ()=> setActiveNav('appointments'));
+  document.getElementById('nav-analytics').addEventListener('click', ()=> setActiveNav('analytics'));
+  document.getElementById('nav-alerts').addEventListener('click', ()=> setActiveNav('alerts'));
+  document.getElementById('nav-sources').addEventListener('click', ()=> setActiveNav('sources'));
+  document.getElementById('nav-noshow').addEventListener('click', ()=> setActiveNav('noshow'));
+
+  // Global functions for export/filter
+  window.exportCSV = ()=>{
     let csv = "Client,Date,Industry,Source,Status,CRM,Notes\n";
-    data.forEach(a => {
-      csv += `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes}\n`;
-    });
-    let blob = new Blob([csv], {type: 'text/csv'});
-    let a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "appointments.csv";
-    a.click();
-    showToast("CSV exported");
-  }
-
-  // --- Filter Controls (unchanged) ---
-  document.querySelectorAll('#filterGroup button').forEach(btn => {
-    btn.addEventListener('click', function (e) {
-      document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active-filter'));
-      this.classList.add('active-filter');
-      currentFilter = this.dataset.filter;
-      render();
-    });
-  });
-  function clearCompletedFilter() {
-    document.querySelector('#filterGroup button[data-filter="all"]').click();
-  }
-
-  // --- Make functions global for onclick handlers ---
-  window.editAppointment = editAppointment;
-  window.deleteAppointment = deleteAppointment;
-  window.saveAppointment = saveAppointment;
-  window.exportCSV = exportCSV;
-  window.clearCompletedFilter = clearCompletedFilter;
+    data.forEach(a=> csv += `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes}\n`);
+    let blob = new Blob([csv],{type:'text/csv'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="appointments.csv"; a.click(); showToast("CSV exported");
+  };
+  window.clearCompletedFilter = ()=>{ currentFilter = "all"; renderAppointmentsPage(); };
 
   // Initial render
-  render();
+  setActiveNav('appointments');
 </script>
 </body>
 </html>
