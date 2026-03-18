@@ -29,7 +29,6 @@
       background: #1a1a1c;
     }
 
-    /* main app wrapper */
     .app-wrapper {
       display: flex;
       width: 100%;
@@ -40,7 +39,7 @@
       max-height: 95vh;
     }
 
-    /* ========= SIDEBAR (fully functional) ========= */
+    /* ========= SIDEBAR ========= */
     .sidebar {
       width: 280px;
       background: rgba(255,255,255,0.9);
@@ -163,10 +162,6 @@
       color: #f97316;
     }
 
-    .nav-item.active i {
-      color: #f97316;
-    }
-
     .sidebar.collapsed .logo-text,
     .sidebar.collapsed .nav-item span:not(.icon-only) {
       display: none;
@@ -190,7 +185,7 @@
       display: none;
     }
 
-    /* ========= MAIN PANEL (dynamic content) ========= */
+    /* ========= MAIN PANEL ========= */
     .main-panel {
       flex: 1;
       background: rgba(255,255,255,0.75);
@@ -244,14 +239,13 @@
       gap: 0.3rem;
     }
 
-    /* Page content container (changes with navigation) */
     .page-content {
       animation: fade 0.2s ease;
     }
 
     @keyframes fade { from { opacity: 0.3; } to { opacity: 1; } }
 
-    /* Commission panel, KPI, table styles (reused) */
+    /* Commission panel, KPI, table styles */
     .commission-panel {
       background: linear-gradient(105deg, #fff3e5, #ffe8d6);
       border-left: 6px solid #f97316;
@@ -325,12 +319,24 @@
     .status-dot { width: 12px; height: 12px; border-radius: 20px; display: inline-block; }
     .dot-green { background: #22c55e; } .dot-yellow { background: #facc15; } .dot-orange { background: #f97316; }
 
-    .chart-area {
-      background: white; border-radius: 1.8rem; padding: 1.5rem; border: 1px solid #edf2f7;
+    /* Chart area - fixed dimensions */
+    .chart-container {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.5rem;
+      border: 1px solid #edf2f7;
+      margin-top: 1.5rem;
+      height: 300px;
+      position: relative;
     }
-    body.dark .chart-area { background: #1e293b; border-color: #334155; }
+    body.dark .chart-container { background: #1e293b; border-color: #334155; }
+    
+    #analyticsChart {
+      max-height: 250px;
+      width: 100% !important;
+    }
 
-    /* modal & toast (unchanged) */
+    /* Modal with multi-line notes */
     .modal { display: none; position: fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px);}
     .modal.active { display:flex; }
     .modal-content { background:white; border-radius:2rem; padding:2rem; max-width:600px; width:90%; max-height:90vh; overflow-y:auto; }
@@ -338,25 +344,42 @@
     .form-group { margin-bottom:1rem; }
     .form-group label { display:block; margin-bottom:0.3rem; color:#475569; }
     body.dark .form-group label { color:#cbd5e1; }
-    .form-group input, .form-group select { width:100%; padding:0.8rem 1rem; border:1px solid #e2e8f0; border-radius:1.5rem; background:#f8fafc; }
-    body.dark .form-group input, body.dark .form-group select { background:#0f172a; color:#f1f5f9; border-color:#334155; }
-    .toast { position:fixed; bottom:20px; right:20px; background:#1e293b; color:white; padding:0.8rem 1.5rem; border-radius:3rem; display:flex; align-items:center; gap:0.8rem; transform:translateX(400px); transition:transform 0.3s; z-index:2000; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; padding:0.8rem 1rem; border:1px solid #e2e8f0; border-radius:1.5rem; background:#f8fafc; font-size:0.95rem;
+      resize: vertical; font-family: inherit;
+    }
+    body.dark .form-group input, body.dark .form-group select, body.dark .form-group textarea {
+      background:#0f172a; color:#f1f5f9; border-color:#334155;
+    }
+    .form-group textarea { min-height: 80px; }
+    .toast {
+      position:fixed; bottom:20px; right:20px; background:#1e293b; color:white; padding:0.8rem 1.5rem;
+      border-radius:3rem; display:flex; align-items:center; gap:0.8rem; transform:translateX(400px);
+      transition:transform 0.3s; z-index:2000;
+    }
     .toast.show { transform:translateX(0); }
 
-    /* page-specific cards for other sections */
-    .insight-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;
+    /* Smart concise button */
+    .smart-concise-btn {
+      background: #f97316; color: white; border: none; border-radius: 2rem;
+      padding: 0.3rem 1rem; font-size: 0.8rem; cursor: pointer; margin-left: 0.5rem;
     }
-    .insight-card {
-      background: white; border-radius: 2rem; padding: 2rem 1.5rem; border: 1px solid #e9eef3; text-align: center;
+
+    /* Analytics cards */
+    .analytics-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem;
     }
-    body.dark .insight-card { background: #1e293b; border-color: #334155; }
-    .insight-card i { font-size: 2.5rem; color: #f97316; margin-bottom: 1rem; }
+    .analytics-card {
+      background: white; border-radius: 1.8rem; padding: 1.5rem; border: 1px solid #edf2f7;
+    }
+    body.dark .analytics-card { background: #1e293b; border-color: #334155; }
+    .analytics-card h3 { color: #64748b; font-size: 1rem; margin-bottom: 0.5rem; }
+    .analytics-card .value { font-size: 2.5rem; font-weight: 700; color: #f97316; }
   </style>
 </head>
 <body>
 <div class="app-wrapper">
-  <!-- SIDEBAR WITH FUNCTIONAL BUTTONS (each leads to its own page) -->
+  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo-area">
@@ -377,27 +400,47 @@
     </div>
   </div>
 
-  <!-- MAIN PANEL with dynamic page container -->
+  <!-- MAIN PANEL -->
   <div class="main-panel">
     <div class="main-header">
       <h1 id="page-title"><i class="fas fa-chart-line" style="color:#f97316;"></i> commission hub</h1>
       <div class="theme-toggle" id="themeToggle"><i class="fa-regular fa-sun"></i><i class="fa-regular fa-moon"></i></div>
     </div>
 
-    <!-- Dynamic page content will be injected here -->
-    <div id="page-content-container" class="page-content">
-      <!-- Default: Appointments page (fully functional) -->
+    <!-- Dynamic page content -->
+    <div id="page-content-container" class="page-content"></div>
+  </div>
+</div>
+
+<!-- MODAL with multi-line notes -->
+<div class="modal" id="appointmentModal">
+  <div class="modal-content">
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 id="modalTitle">Add Appointment</h2>
+      <button class="close-modal" id="closeModalBtn" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+    </div>
+    <div class="form-group"><label>Client *</label><input id="client" placeholder="e.g. Acme Corp"></div>
+    <div class="form-group"><label>Date *</label><input type="date" id="date"></div>
+    <div class="form-group"><label>Industry</label><select id="industry"><option value="">Select</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select></div>
+    <div class="form-group"><label>Source</label><select id="source"><option value="">Select</option><option>Cold Call</option><option>LinkedIn</option><option>Referral</option><option>Email</option></select></div>
+    <div class="form-group"><label>Status</label><select id="status"><option value="green">✅ successful</option><option value="yellow">🔁 rebook</option><option value="orange">⏳ no show</option></select></div>
+    <div class="form-group"><label>CRM Link</label><input id="crm" placeholder="https://..."></div>
+    <div class="form-group">
+      <label>Notes <button class="smart-concise-btn" id="smartConciseBtn" type="button"><i class="fa-regular fa-lightbulb"></i> Smart concise</button></label>
+      <textarea id="notes" placeholder="Enter notes... (multi-line supported)"></textarea>
+    </div>
+    <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+      <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
+      <button class="btn-primary" onclick="saveAppointment()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- Modals and toast (keep outside dynamic container) -->
-<div class="modal" id="appointmentModal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle">Add Appointment</h2><button class="close-modal" id="closeModalBtn">&times;</button></div><div class="form-group"><label>Client *</label><input id="client"></div><div class="form-group"><label>Date *</label><input type="date" id="date"></div><div class="form-group"><label>Industry</label><select id="industry"><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select></div><div class="form-group"><label>Source</label><select id="source"><option>Cold Call</option><option>LinkedIn</option><option>Referral</option><option>Email</option></select></div><div class="form-group"><label>Status</label><select id="status"><option value="green">✅ successful</option><option value="yellow">🔁 rebook</option><option value="orange">⏳ no show</option></select></div><div class="form-group"><label>CRM Link</label><input id="crm"></div><div class="form-group"><label>Notes</label><input id="notes"></div><div class="modal-actions"><button class="btn-secondary" id="cancelModalBtn">Cancel</button><button class="btn-primary" onclick="saveAppointment()">Save</button></div></div></div>
 <div class="toast" id="toast"><i class="fa-regular fa-circle-check"></i><span id="toastMessage">Saved</span></div>
 
 <script>
   (function() {
-    // dark mode
+    // Dark mode
     const body = document.body;
     const themeToggle = document.getElementById('themeToggle');
     if (localStorage.getItem('darkMode') === 'true') body.classList.add('dark');
@@ -406,37 +449,33 @@
       localStorage.setItem('darkMode', body.classList.contains('dark'));
     });
 
-    // sidebar collapse
+    // Sidebar collapse
     const sidebar = document.getElementById('sidebar');
     const collapseBtn = document.getElementById('collapseSidebarBtn');
     collapseBtn.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       const icon = collapseBtn.querySelector('i');
-      if (sidebar.classList.contains('collapsed')) {
-        icon.classList.remove('fa-chevron-left');
-        icon.classList.add('fa-chevron-right');
-      } else {
-        icon.classList.remove('fa-chevron-right');
-        icon.classList.add('fa-chevron-left');
-      }
+      icon.classList.toggle('fa-chevron-left');
+      icon.classList.toggle('fa-chevron-right');
     });
   })();
 
-  // ---- DATA (shared across all pages) ----
+  // --- DATA MANAGEMENT ---
   let data = JSON.parse(localStorage.getItem("appointments")) || [];
   data = data.map(item => {
     if (item.status === "red") item.status = "orange";
     if (!item.id) item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2,9);
     return item;
   });
-  save();
+  saveData();
 
   let editId = null;
   let currentFilter = "all";
+  let currentPage = "appointments";
+  let analyticsChart = null;
 
   // DOM elements
   const modal = document.getElementById('appointmentModal');
-  const openModalBtn = document.getElementById('openAddModalBtn'); // will be redefined per page
   const closeModalBtn = document.getElementById('closeModalBtn');
   const cancelModalBtn = document.getElementById('cancelModalBtn');
   const toast = document.getElementById('toast');
@@ -445,17 +484,33 @@
   const pageTitle = document.getElementById('page-title');
 
   function showToast(msg) { toastMessage.innerText = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
-  function save() { localStorage.setItem("appointments", JSON.stringify(data)); }
+  function saveData() { localStorage.setItem("appointments", JSON.stringify(data)); }
 
   // Modal controls
   closeModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
   cancelModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
   modal.addEventListener('click', (e)=> e.target===modal && modal.classList.remove('active'));
 
+  // Smart concise button
+  document.getElementById('smartConciseBtn')?.addEventListener('click', function() {
+    const notesField = document.getElementById('notes');
+    let text = notesField.value.trim();
+    if (!text) {
+      notesField.value = "No notes to summarize.";
+      return;
+    }
+    let concise = text.length > 60 ? text.substring(0, 60) + '…' : text;
+    notesField.value = concise + ' (concise)';
+  });
+
   function clearForm() {
-    document.getElementById("client").value=""; document.getElementById("date").value="";
-    document.getElementById("industry").value=""; document.getElementById("source").value="";
-    document.getElementById("status").value="green"; document.getElementById("crm").value=""; document.getElementById("notes").value="";
+    document.getElementById("client").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("industry").value = "";
+    document.getElementById("source").value = "";
+    document.getElementById("status").value = "green";
+    document.getElementById("crm").value = "";
+    document.getElementById("notes").value = "";
   }
 
   window.saveAppointment = function() {
@@ -472,185 +527,288 @@
       notes: document.getElementById("notes").value.trim()
     };
     if (editId) {
-      let idx = data.findIndex(i=>i.id===editId);
-      if (idx>=0) data[idx]=obj;
+      let idx = data.findIndex(i => i.id === editId);
+      if (idx >= 0) data[idx] = obj;
       showToast("Updated");
-    } else { data.push(obj); showToast("Added"); }
-    save(); modal.classList.remove('active');
-    renderCurrentPage(); // refresh current view
-  };
-
-  window.editAppointment = (id)=>{
-    let item = data.find(a=>a.id===id); if(!item) return;
-    document.getElementById("client").value=item.client||"";
-    document.getElementById("date").value=item.date||"";
-    document.getElementById("industry").value=item.industry||"";
-    document.getElementById("source").value=item.source||"";
-    document.getElementById("status").value=item.status||"green";
-    document.getElementById("crm").value=item.crm||"";
-    document.getElementById("notes").value=item.notes||"";
-    editId=id; document.getElementById('modalTitle').innerText='Edit Appointment'; modal.classList.add('active');
-  };
-  window.deleteAppointment = (id)=>{ if(confirm("Delete?")){ data=data.filter(i=>i.id!==id); save(); if(editId===id) editId=null; renderCurrentPage(); showToast("Deleted"); }};
-
-  // Helper functions for stats (used by all pages)
-  function getSuccessfulThisMonth() {
-    let today = new Date();
-    return data.filter(a=> a.status==="green" && new Date(a.date).getMonth()===today.getMonth() && new Date(a.date).getFullYear()===today.getFullYear()).length;
-  }
-  function getStats() {
-    let today=new Date(), week=0, month=0, year=0;
-    let oneJan = new Date(today.getFullYear(),0,1);
-    let currentWeek = Math.ceil((((today - oneJan) / 86400000) + oneJan.getDay()+1)/7);
-    data.forEach(a=>{
-      let d=new Date(a.date); if(isNaN(d)) return;
-      if(d.getFullYear()===today.getFullYear()) year++;
-      if(d.getMonth()===today.getMonth() && d.getFullYear()===today.getFullYear()) month++;
-      let w = Math.ceil((((d - new Date(d.getFullYear(),0,1)) / 86400000)+1)/7);
-      if(d.getFullYear()===today.getFullYear() && w===currentWeek) week++;
-    });
-    return {week,month,year};
-  }
-  function calculateStreak() {
-    let greens = data.filter(a=>a.status==="green").map(a=>new Date(a.date).toDateString()).filter((v,i,s)=>s.indexOf(v)===i).sort((a,b)=>new Date(a)-new Date(b));
-    if(!greens.length) return 0;
-    let max=1, cur=1;
-    for(let i=1;i<greens.length;i++) {
-      let prev = new Date(greens[i-1]), curr = new Date(greens[i]);
-      let diff = (curr - prev)/(1000*3600*24);
-      if(diff===1) cur++; else { max=Math.max(max,cur); cur=1; }
+    } else {
+      data.push(obj);
+      showToast("Added");
     }
-    return Math.max(max,cur);
+    saveData();
+    modal.classList.remove('active');
+    renderCurrentPage();
+  };
+
+  window.editAppointment = (id) => {
+    let item = data.find(a => a.id === id);
+    if (!item) return;
+    document.getElementById("client").value = item.client || "";
+    document.getElementById("date").value = item.date || "";
+    document.getElementById("industry").value = item.industry || "";
+    document.getElementById("source").value = item.source || "";
+    document.getElementById("status").value = item.status || "green";
+    document.getElementById("crm").value = item.crm || "";
+    document.getElementById("notes").value = item.notes || "";
+    editId = id;
+    document.getElementById('modalTitle').innerText = 'Edit Appointment';
+    modal.classList.add('active');
+  };
+
+  window.deleteAppointment = (id) => {
+    if (confirm("Delete this appointment?")) {
+      data = data.filter(i => i.id !== id);
+      saveData();
+      if (editId === id) editId = null;
+      renderCurrentPage();
+      showToast("Deleted");
+    }
+  };
+
+  // Stats helpers
+  function getSuccessfulThisMonth() {
+    const today = new Date();
+    return data.filter(a => a.status === "green" && new Date(a.date).getMonth() === today.getMonth() && new Date(a.date).getFullYear() === today.getFullYear()).length;
   }
+
+  function getWeekNumber(d) {
+    const firstJan = new Date(d.getFullYear(), 0, 1);
+    return Math.ceil((((d - firstJan) / 86400000) + firstJan.getDay() + 1) / 7);
+  }
+
+  function getStats() {
+    const today = new Date();
+    let week = 0, month = 0, year = 0;
+    const currentWeek = getWeekNumber(today);
+    data.forEach(a => {
+      const d = new Date(a.date);
+      if (isNaN(d)) return;
+      if (d.getFullYear() === today.getFullYear()) year++;
+      if (d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()) month++;
+      if (d.getFullYear() === today.getFullYear() && getWeekNumber(d) === currentWeek) week++;
+    });
+    return { week, month, year };
+  }
+
+  function getTopSource() {
+    const sources = data.map(d => d.source).filter(Boolean);
+    if (!sources.length) return '-';
+    const freq = sources.reduce((acc, s) => { acc[s] = (acc[s] || 0) + 1; return acc; }, {});
+    return Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+  }
+
+  function calculateStreak() {
+    const greens = data.filter(a => a.status === "green")
+      .map(a => new Date(a.date).toDateString())
+      .filter((v,i,s) => s.indexOf(v) === i)
+      .sort((a,b) => new Date(a) - new Date(b));
+    if (!greens.length) return 0;
+    let max = 1, cur = 1;
+    for (let i = 1; i < greens.length; i++) {
+      const prev = new Date(greens[i-1]), curr = new Date(greens[i]);
+      const diff = (curr - prev) / (1000*3600*24);
+      if (diff === 1) cur++; else { max = Math.max(max, cur); cur = 1; }
+    }
+    return Math.max(max, cur);
+  }
+
   function conversionRate() {
-    let monthTotal = data.filter(a=>{ let d=new Date(a.date); return d.getMonth()===new Date().getMonth() && d.getFullYear()===new Date().getFullYear(); }).length;
-    let monthGreen = getSuccessfulThisMonth();
-    if(monthTotal===0) return '-';
-    return Math.round((monthGreen/monthTotal)*100)+'%';
+    const monthTotal = data.filter(a => {
+      const d = new Date(a.date);
+      return d.getMonth() === new Date().getMonth() && d.getFullYear() === new Date().getFullYear();
+    }).length;
+    if (monthTotal === 0) return '-';
+    return Math.round((getSuccessfulThisMonth() / monthTotal) * 100) + '%';
   }
 
-  // ----- PAGE RENDERING FUNCTIONS (each corresponds to a sidebar button) -----
-  function renderAppointmentsPage() {
-    let filtered = currentFilter==="all"? data : data.filter(a=>a.status===currentFilter);
-    let successMonth = getSuccessfulThisMonth();
-    let commission = successMonth>=8 ? successMonth*750 : 0;
-    let streak = calculateStreak();
-    let conv = conversionRate();
-    let sources = data.map(d=>d.source).filter(Boolean);
-    let freq = sources.reduce((acc,s)=>(acc[s]=(acc[s]||0)+1,acc),{});
-    let top = Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0];
-    let industryCnt = data.filter(d=>d.industry).length;
+  function getMonthlyData() {
+    const months = new Array(12).fill(0);
+    data.forEach(a => {
+      const d = new Date(a.date);
+      if (!isNaN(d)) months[d.getMonth()]++;
+    });
+    return months;
+  }
 
-    let html = `
+  // --- PAGE RENDERING ---
+  function renderAppointmentsPage() {
+    const filtered = currentFilter === "all" ? data : data.filter(a => a.status === currentFilter);
+    const stats = getStats();
+    const successMonth = getSuccessfulThisMonth();
+    const commission = successMonth >= 8 ? successMonth * 750 : 0;
+    const progressPercent = Math.min((successMonth / 8) * 100, 100);
+    const topSource = getTopSource();
+    const streak = calculateStreak();
+    const conv = conversionRate();
+
+    let tableRows = '';
+    filtered.forEach(a => {
+      const statusClass = a.status === "green" ? "dot-green" : (a.status === "yellow" ? "dot-yellow" : "dot-orange");
+      tableRows += `<tr>
+        <td><span class="status-dot ${statusClass}"></span></td>
+        <td>${a.client || ''}</td>
+        <td>${a.date || ''}</td>
+        <td>${a.industry || '-'}</td>
+        <td>${a.source || '-'}</td>
+        <td>${a.crm ? `<a href="${a.crm}" target="_blank" style="background:#f1f5f9; padding:0.2rem 0.8rem; border-radius:30px; text-decoration:none; color:inherit;"><i class="fa-regular fa-link"></i> crm</a>` : '-'}</td>
+        <td>${a.notes ? (a.notes.length > 30 ? a.notes.substring(0,27)+'…' : a.notes) : ''}</td>
+        <td>
+          <button class="action-btn" onclick="editAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="action-btn" onclick="deleteAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;"><i class="fa-regular fa-trash-can"></i></button>
+        </td>
+      </tr>`;
+    });
+
+    const html = `
       <div class="commission-panel">
-        <div class="commission-left"><h3><i class="fas fa-circle-dollar-to-slot"></i> commission (success only)</h3><p>✅ only <strong>green</strong> count</p><p>📅 monthly target: 8 · after 8 = 750 PHP each</p></div>
+        <div class="commission-left"><h3><i class="fas fa-circle-dollar-to-slot"></i> commission (success only)</h3><p>✅ only green count</p><p>📅 target 8 · after 8 = 750 PHP each</p></div>
         <div class="commission-highlight"><span>${commission} PHP</span><small>this month</small></div>
-        <div class="progress-wrapper"><div class="progress-label"><span>✅ success/target</span><span>${successMonth}</span><span>/8</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min((successMonth/8)*100,100)}%;"></div></div></div>
+        <div class="progress-wrapper"><div class="progress-label"><span>✅ success/target</span><span>${successMonth}</span><span>/8</span></div><div class="progress-bg"><div class="progress-fill" style="width:${progressPercent}%;"></div></div></div>
       </div>
       <div class="kpi-grid">
-        <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${getStats().week}</h2><p>this week</p></div>
-        <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2>${getStats().month}</h2><p>this month</p></div>
-        <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2>${getStats().year}</h2><p>this year</p></div>
+        <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${stats.week}</h2><p>this week</p></div>
+        <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2>${stats.month}</h2><p>this month</p></div>
+        <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2>${stats.year}</h2><p>this year</p></div>
       </div>
       <div class="feature-bar">
         <div class="feature-badge"><i class="fa-regular fa-clock"></i> pending = no-show</div>
-        <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: ${top||'-'}</div>
+        <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: ${topSource}</div>
         <div class="feature-badge"><i class="fa-regular fa-flag"></i> quota: ${successMonth}/8</div>
         <div class="feature-badge"><i class="fa-regular fa-fire"></i> streak: ${streak}</div>
         <div class="feature-badge"><i class="fa-regular fa-thumbs-up"></i> conv: ${conv}</div>
         <div class="filter-group" id="filterGroup">
-          <button class="active-filter" data-filter="all">All</button><button data-filter="green">✅ success</button><button data-filter="yellow">🔁 rebook</button><button data-filter="orange">⏳ no show</button>
+          <button class="${currentFilter==='all'?'active-filter':''}" data-filter="all">All</button>
+          <button class="${currentFilter==='green'?'active-filter':''}" data-filter="green">✅ success</button>
+          <button class="${currentFilter==='yellow'?'active-filter':''}" data-filter="yellow">🔁 rebook</button>
+          <button class="${currentFilter==='orange'?'active-filter':''}" data-filter="orange">⏳ no show</button>
         </div>
         <div class="action-button-group">
           <button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New</button>
           <button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button>
-          <button class="btn-secondary" onclick="clearCompletedFilter()"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button>
+          <button class="btn-secondary" onclick="clearFilter()"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button>
         </div>
       </div>
       <div class="table-wrapper">
-        <table><thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead><tbody id="tableBody">`;
-
-    filtered.forEach(a => {
-      let statusClass = a.status==="green"?"dot-green":(a.status==="yellow"?"dot-yellow":"dot-orange");
-      html += `<tr><td><span class="status-dot ${statusClass}"></span></td><td>${a.client||''}</td><td>${a.date||''}</td><td>${a.industry||'-'}</td><td>${a.source||'-'}</td><td>${a.crm?`<a href="${a.crm}" target="_blank" class="crm-link"><i class="fa-regular fa-link"></i> crm</a>`:'-'}</td><td>${a.notes||''}</td><td><button class="action-btn" onclick="editAppointment('${a.id}')"><i class="fa-regular fa-pen-to-square"></i></button><button class="action-btn" onclick="deleteAppointment('${a.id}')"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
-    });
-
-    html += `</tbody></table></div>
-      <div class="chart-area">
-        <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;"><span><i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> monthly trend</span><span class="feature-badge">📊 industry count: ${industryCnt}</span></div>
-        <canvas id="chart"></canvas>
-      </div>`;
+        <table><thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead><tbody>${tableRows}</tbody></table>
+      </div>
+    `;
 
     pageContainer.innerHTML = html;
     pageTitle.innerHTML = '<i class="fas fa-chart-line" style="color:#f97316;"></i> commission hub · appointments';
 
-    // re-attach filter events
-    document.querySelectorAll('#filterGroup button').forEach(b=> b.addEventListener('click', function() {
-      document.querySelectorAll('#filterGroup button').forEach(bb=>bb.classList.remove('active-filter'));
-      this.classList.add('active-filter'); currentFilter = this.dataset.filter; renderAppointmentsPage();
-    }));
+    document.querySelectorAll('#filterGroup button').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active-filter'));
+        this.classList.add('active-filter');
+        currentFilter = this.dataset.filter;
+        renderAppointmentsPage();
+      });
+    });
 
-    // re-attach new button
-    document.getElementById('openAddModalBtn').addEventListener('click', ()=>{ clearForm(); editId=null; document.getElementById('modalTitle').innerText='Add Appointment'; modal.classList.add('active'); });
-
-    // render chart
-    let months = new Array(12).fill(0);
-    data.forEach(a=>{ let d=new Date(a.date); if(!isNaN(d)) months[d.getMonth()]++; });
-    if (window.appChart) window.appChart.destroy();
-    window.appChart = new Chart(document.getElementById("chart"), { type:'bar', data: { labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], datasets:[{ label:"appointments", data:months, backgroundColor:"#f97316", borderRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } } });
+    document.getElementById('openAddModalBtn').addEventListener('click', () => {
+      clearForm();
+      editId = null;
+      document.getElementById('modalTitle').innerText = 'Add Appointment';
+      modal.classList.add('active');
+    });
   }
 
-  // Other pages (simplified, demonstrate that each button leads to a different page)
   function renderAnalyticsPage() {
-    let successMonth = getSuccessfulThisMonth();
-    let total = data.length;
-    pageContainer.innerHTML = `
-      <div style="text-align:center; padding:3rem;"><i class="fa-regular fa-chart-bar" style="font-size:4rem; color:#f97316;"></i>
-      <h2 style="margin:1rem 0;">Analytics Dashboard</h2>
-      <div class="insight-grid">
-        <div class="insight-card"><i class="fa-regular fa-calendar"></i><h3>Total appointments</h3><p style="font-size:2rem;">${total}</p></div>
-        <div class="insight-card"><i class="fa-regular fa-face-smile"></i><h3>Successful</h3><p style="font-size:2rem;">${data.filter(d=>d.status==='green').length}</p></div>
-        <div class="insight-card"><i class="fa-regular fa-clock"></i><h3>No‑show rate</h3><p style="font-size:2rem;">${total? Math.round((data.filter(d=>d.status==='orange').length/total)*100) : 0}%</p></div>
-        <div class="insight-card"><i class="fa-regular fa-star"></i><h3>Conversion (month)</h3><p style="font-size:2rem;">${conversionRate()}</p></div>
+    const monthlyData = getMonthlyData();
+    const total = data.length;
+    const success = data.filter(d => d.status === 'green').length;
+    const noshow = data.filter(d => d.status === 'orange').length;
+    const rebook = data.filter(d => d.status === 'yellow').length;
+    const conversion = total ? Math.round((success / total) * 100) : 0;
+
+    const html = `
+      <div class="analytics-grid">
+        <div class="analytics-card"><h3>Total Appointments</h3><div class="value">${total}</div></div>
+        <div class="analytics-card"><h3>Success Rate</h3><div class="value">${conversion}%</div></div>
+        <div class="analytics-card"><h3>Successful</h3><div class="value">${success}</div></div>
+        <div class="analytics-card"><h3>No‑show</h3><div class="value">${noshow}</div></div>
+        <div class="analytics-card"><h3>Rebook</h3><div class="value">${rebook}</div></div>
+        <div class="analytics-card"><h3>This Month</h3><div class="value">${getStats().month}</div></div>
       </div>
-      <p style="margin-top:2rem; color:#64748b;">Detailed analytics coming soon.</p></div>`;
+      <div class="chart-container">
+        <canvas id="analyticsChart" style="height:250px; width:100%;"></canvas>
+      </div>
+    `;
+
+    pageContainer.innerHTML = html;
     pageTitle.innerHTML = '<i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> Analytics';
+
+    // Fix chart stretching - proper canvas sizing
+    const canvas = document.getElementById('analyticsChart');
+    if (canvas) {
+      if (analyticsChart) analyticsChart.destroy();
+      
+      // Set explicit dimensions
+      canvas.style.height = '250px';
+      canvas.style.width = '100%';
+      
+      analyticsChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+          datasets: [{
+            label: "Appointments",
+            data: monthlyData,
+            backgroundColor: "#f97316",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
   }
+
   function renderAlertsPage() {
-    let now = new Date();
-    let upcoming = data.filter(a => new Date(a.date) > now && a.status !== 'green').length;
+    const upcoming = data.filter(a => new Date(a.date) > new Date() && a.status !== 'green').length;
     pageContainer.innerHTML = `
-      <div style="text-align:center; padding:3rem;"><i class="fa-regular fa-bell" style="font-size:4rem; color:#f97316;"></i>
-      <h2 style="margin:1rem 0;">Smart Alerts</h2>
-      <div class="insight-grid">
-        <div class="insight-card"><i class="fa-regular fa-hourglass-half"></i><h3>Pending follow‑ups</h3><p style="font-size:2rem;">${upcoming}</p></div>
-        <div class="insight-card"><i class="fa-regular fa-circle-exclamation"></i><h3>No‑show watch</h3><p style="font-size:2rem;">${data.filter(d=>d.status==='orange').length}</p></div>
-      </div>
-      <p style="margin-top:2rem;">Notifications and reminders will appear here.</p></div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-bell" style="color:#f97316;"></i> Smart Alerts';
+      <div style="padding:2rem; text-align:center;">
+        <i class="fa-regular fa-bell" style="font-size:4rem; color:#f97316;"></i>
+        <h2 style="margin:1rem 0;">Smart Alerts</h2>
+        <div class="analytics-card" style="max-width:300px; margin:0 auto;">
+          <h3>Upcoming non‑green</h3>
+          <div class="value">${upcoming}</div>
+        </div>
+      </div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-bell"></i> Smart Alerts';
   }
+
   function renderSourcesPage() {
-    let sources = data.map(d=>d.source).filter(Boolean);
-    let freq = sources.reduce((acc,s)=>(acc[s]=(acc[s]||0)+1,acc),{});
-    let entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+    const freq = {};
+    data.forEach(d => { if (d.source) freq[d.source] = (freq[d.source] || 0) + 1; });
+    const entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
     pageContainer.innerHTML = `
-      <div style="padding:2rem;"><i class="fa-regular fa-star" style="font-size:3rem; color:#f97316; display:block; text-align:center;"></i>
-      <h2 style="text-align:center; margin:1rem;">Top Lead Sources</h2>
-      <div style="display:flex; flex-direction:column; gap:1rem; max-width:400px; margin:2rem auto;">
-        ${entries.map(([src,cnt]) => `<div style="display:flex; justify-content:space-between; background:white; padding:1rem 2rem; border-radius:3rem;"><span>${src}</span><strong>${cnt}</strong></div>`).join('')}
-      </div></div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-star" style="color:#f97316;"></i> Top Sources';
+      <div style="padding:2rem;">
+        <h2 style="margin-bottom:1.5rem;">Top Lead Sources</h2>
+        ${entries.map(([s,c]) => `
+          <div style="background:white; margin:0.5rem 0; padding:1rem 1.5rem; border-radius:3rem; display:flex; justify-content:space-between; border:1px solid #edf2f7;">
+            <span>${s}</span> <strong>${c}</strong>
+          </div>
+        `).join('')}
+      </div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-star"></i> Top Sources';
   }
+
   function renderNoshowPage() {
-    let noshows = data.filter(d=>d.status==='orange');
+    const noshows = data.filter(d => d.status === 'orange');
     pageContainer.innerHTML = `
-      <div style="padding:2rem;"><i class="fa-regular fa-clock" style="font-size:3rem; color:#f97316; display:block; text-align:center;"></i>
-      <h2 style="text-align:center; margin:1rem;">No‑show guard</h2>
-      <p style="text-align:center; margin-bottom:2rem;">Clients marked as pending (orange) — follow up.</p>
-      <div style="background:white; border-radius:2rem; padding:1.5rem;">
-        ${noshows.length? noshows.map(n=>`<div style="padding:0.5rem 0;">🔸 ${n.client} — ${n.date}</div>`).join('') : '<p style="text-align:center;">All clear, no pending no-shows.</p>'}
-      </div></div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-clock" style="color:#f97316;"></i> No‑show guard';
+      <div style="padding:2rem;">
+        <h2 style="margin-bottom:1.5rem;">No‑show guard</h2>
+        ${noshows.length ? noshows.map(n => `
+          <div style="background:white; padding:1rem 1.5rem; border-radius:3rem; margin:0.5rem 0; border:1px solid #edf2f7;">
+            🔸 ${n.client} — ${n.date} ${n.notes ? '· ' + n.notes : ''}
+          </div>
+        `).join('') : '<p class="analytics-card" style="text-align:center;">All clear, no pending no-shows.</p>'}
+      </div>`;
+    pageTitle.innerHTML = '<i class="fa-regular fa-clock"></i> No‑show guard';
   }
 
   function renderCurrentPage() {
@@ -661,12 +819,11 @@
     else if (currentPage === 'noshow') renderNoshowPage();
   }
 
-  // Navigation: set active class and render corresponding page
-  let currentPage = 'appointments';
-  function setActiveNav(pageId) {
+  // Navigation
+  function setActiveNav(page) {
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`nav-${pageId}`).classList.add('active');
-    currentPage = pageId;
+    document.getElementById(`nav-${page}`).classList.add('active');
+    currentPage = page;
     renderCurrentPage();
   }
 
@@ -676,13 +833,20 @@
   document.getElementById('nav-sources').addEventListener('click', ()=> setActiveNav('sources'));
   document.getElementById('nav-noshow').addEventListener('click', ()=> setActiveNav('noshow'));
 
-  // Global functions for export/filter
-  window.exportCSV = ()=>{
-    let csv = "Client,Date,Industry,Source,Status,CRM,Notes\n";
-    data.forEach(a=> csv += `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes}\n`);
-    let blob = new Blob([csv],{type:'text/csv'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="appointments.csv"; a.click(); showToast("CSV exported");
+  window.exportCSV = () => {
+    const csv = "Client,Date,Industry,Source,Status,CRM,Notes\n" + data.map(a => `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes}`).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "appointments.csv";
+    a.click();
+    showToast("CSV exported");
   };
-  window.clearCompletedFilter = ()=>{ currentFilter = "all"; renderAppointmentsPage(); };
+
+  window.clearFilter = () => {
+    currentFilter = "all";
+    if (currentPage === 'appointments') renderAppointmentsPage();
+  };
 
   // Initial render
   setActiveNav('appointments');
