@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* ... (keep all existing styles from the original, they are excellent) ... */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -224,7 +225,7 @@
       color: #94a3b8;
     }
 
-    /* filter bar + badges */
+    /* filter bar + badges + action buttons */
     .feature-bar {
       display: flex;
       flex-wrap: wrap;
@@ -283,70 +284,135 @@
     body.dark .filter-group button.active-filter {
       color: white;
     }
+    .action-button-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+    .btn-primary, .btn-secondary {
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 3rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .btn-primary {
+        background: #f97316;
+        color: white;
+        box-shadow: 0 8px 14px -8px #f97316;
+    }
+    .btn-primary:hover {
+        background: #e25f0c;
+    }
+    .btn-secondary {
+        background: #1e293b;
+        color: white;
+    }
+    body.dark .btn-secondary {
+        background: #f97316;
+        color: #0f172a;
+    }
+    .btn-secondary:hover {
+        background: #334155;
+    }
+    body.dark .btn-secondary:hover {
+        background: #fb923c;
+    }
 
-    /* add form */
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-      background: white;
-      padding: 1rem 1.2rem;
-      border-radius: 3rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 6px 12px -12px rgba(0,0,0,0.2);
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
     }
-    body.dark .form-row {
-      background: #1e293b;
-      border-color: #334155;
+    .modal.active {
+        display: flex;
     }
-    .form-row input, .form-row select {
-      padding: 0.7rem 1rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 2.5rem;
-      background: #f8fafc;
-      font-size: 0.9rem;
-      min-width: 140px;
-      flex: 1 0 auto;
-      outline: none;
+    .modal-content {
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px -12px black;
     }
-    body.dark .form-row input, body.dark .form-row select {
-      background: #0f172a;
-      border-color: #334155;
-      color: #f1f5f9;
+    body.dark .modal-content {
+        background: #1e293b;
+        border: 1px solid #334155;
     }
-    .form-row input:focus, .form-row select:focus {
-      border-color: #f97316;
-      box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
     }
-    .btn-icon {
-      background: #f97316;
-      border: none;
-      color: white;
-      width: 42px;
-      height: 42px;
-      border-radius: 42px;
-      font-size: 1.2rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 8px 14px -8px #f97316;
+    .modal-header h2 {
+        font-size: 1.5rem;
+        color: #0f2b43;
     }
-    .btn-icon:hover {
-      background: #e25f0c;
+    body.dark .modal-header h2 {
+        color: #f1f5f9;
     }
-    .btn-icon.export {
-      background: #1e293b;
-      box-shadow: none;
-      width: auto;
-      padding: 0 1.5rem;
-      gap: 0.5rem;
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        color: #64748b;
     }
-    body.dark .btn-icon.export {
-      background: #f97316;
-      color: #0f172a;
+    .close-modal:hover {
+        color: #f97316;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+        color: #475569;
+        font-size: 0.9rem;
+    }
+    body.dark .form-group label {
+        color: #cbd5e1;
+    }
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.5rem;
+        background: #f8fafc;
+        font-size: 0.95rem;
+        outline: none;
+    }
+    body.dark .form-group input, body.dark .form-group select {
+        background: #0f172a;
+        border-color: #334155;
+        color: #f1f5f9;
+    }
+    .form-group input:focus, .form-group select:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+    }
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
     }
 
     /* table */
@@ -390,6 +456,14 @@
       color: #e2e8f0;
       border-bottom-color: #334155;
     }
+    /* Add subtle row striping */
+    tbody tr:nth-child(even) {
+        background-color: rgba(0,0,0,0.02);
+    }
+    body.dark tbody tr:nth-child(even) {
+        background-color: rgba(255,255,255,0.02);
+    }
+
     .status-dot {
       width: 12px;
       height: 12px;
@@ -446,10 +520,35 @@
     }
     canvas { max-height: 220px; width: 100% !important; }
 
+    /* Toast notification */
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1e293b;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 3rem;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+    }
+    .toast.show {
+        transform: translateX(0);
+    }
+    .toast i {
+        color: #f97316;
+        font-size: 1.2rem;
+    }
+
     @media (max-width: 750px) {
       .crm-container { padding: 1.5rem; }
       .commission-panel { flex-direction: column; align-items: start; gap: 1rem; }
-      .form-row input, .form-row select { min-width: 100%; }
+      .action-button-group { margin-left: 0; width: 100%; justify-content: flex-end; }
     }
   </style>
 </head>
@@ -491,43 +590,27 @@
     <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2 id="year">0</h2><p>this year</p></div>
   </div>
 
-  <!-- feature bar: filter & badges -->
+  <!-- Consolidated feature bar: badges, filters, and action buttons -->
   <div class="feature-bar">
     <div class="feature-badge"><i class="fa-regular fa-clock"></i> pending (orange) = no-show</div>
     <div class="feature-badge"><i class="fa-regular fa-thumbs-up"></i> 8 success target</div>
     <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: <span id="topSource">-</span></div>
-    <div style="flex:1"></div>
+
     <div class="filter-group" id="filterGroup">
       <button class="active-filter" data-filter="all">All</button>
       <button data-filter="green">✅ success</button>
       <button data-filter="yellow">🔁 rebook</button>
       <button data-filter="orange">⏳ no show</button>
     </div>
+
+    <div class="action-button-group">
+        <button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New Appointment</button>
+        <button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button>
+        <button class="btn-secondary" onclick="clearCompletedFilter()" title="reset filter"><i class="fa-solid fa-filter-circle-xmark"></i> Clear Filter</button>
+    </div>
   </div>
 
-  <!-- add appointment form (icon style) -->
-  <div class="form-row">
-    <input id="client" placeholder="Client name" value="">
-    <input type="date" id="date">
-    <select id="industry"><option value="">Industry</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select>
-    <select id="source"><option value="">Lead source</option><option>Cold Call</option><option>LinkedIn</option><option>Email</option><option>Referral</option></select>
-    <select id="status">
-      <option value="green">✅ successful</option>
-      <option value="yellow">🔁 rebook</option>
-      <option value="orange">⏳ no show (pending)</option>
-    </select>
-    <input id="crm" placeholder="CRM link (https://...)">
-    <input id="notes" placeholder="notes">
-    <button class="btn-icon" onclick="add()" title="add / save"><i class="fa-solid fa-plus"></i></button>
-  </div>
-
-  <!-- export + reset filter -->
-  <div style="display: flex; gap: 8px; margin-bottom: 0.5rem;">
-    <button class="btn-icon export" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> export .csv</button>
-    <button class="btn-icon" style="background:#334155;" onclick="clearCompletedFilter()" title="reset filter"><i class="fa-solid fa-filter-circle-xmark"></i></button>
-  </div>
-
-  <!-- table -->
+  <!-- Table (now clean, without the old form) -->
   <div class="table-wrapper">
     <table>
       <thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead>
@@ -545,12 +628,63 @@
   </div>
 </div>
 
+<!-- Modal for Add/Edit Form -->
+<div class="modal" id="appointmentModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Appointment</h2>
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+    </div>
+    <div class="form-group">
+      <label for="client">Client Name *</label>
+      <input id="client" placeholder="e.g., Acme Corp" value="">
+    </div>
+    <div class="form-group">
+      <label for="date">Date *</label>
+      <input type="date" id="date">
+    </div>
+    <div class="form-group">
+      <label for="industry">Industry</label>
+      <select id="industry"><option value="">Select Industry</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select>
+    </div>
+    <div class="form-group">
+      <label for="source">Lead Source</label>
+      <select id="source"><option value="">Select Source</option><option>Cold Call</option><option>LinkedIn</option><option>Email</option><option>Referral</option></select>
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status">
+        <option value="green">✅ successful</option>
+        <option value="yellow">🔁 rebook</option>
+        <option value="orange">⏳ no show (pending)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="crm">CRM Link</label>
+      <input id="crm" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label for="notes">Notes</label>
+      <input id="notes" placeholder="Additional info">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
+      <button class="btn-primary" onclick="saveAppointment()"><i class="fa-solid fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <i class="fa-regular fa-circle-check"></i>
+    <span id="toastMessage">Item saved</span>
+</div>
+
 <script>
   (function() {
     // dark mode initialization & toggle
     const body = document.body;
     const themeToggle = document.getElementById('themeToggle');
-    // check localStorage
     if (localStorage.getItem('darkMode') === 'true') {
       body.classList.add('dark');
     }
@@ -560,21 +694,142 @@
     });
   })();
 
-  let editIndex = null;
+  // --- Data Management with Unique IDs ---
   let data = JSON.parse(localStorage.getItem("appointments")) || [];
-  // migrate old red to orange
+  // migrate old red to orange and ensure all items have an ID
   data = data.map(item => {
     if (item.status === "red") item.status = "orange";
+    if (!item.id) {
+        item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
     return item;
   });
   save();
 
+  let editId = null; // Store the ID of the item being edited, not the index
   let currentFilter = "all";
+
+  // --- UI Elements ---
+  const modal = document.getElementById('appointmentModal');
+  const openModalBtn = document.getElementById('openAddModalBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const modalTitle = document.getElementById('modalTitle');
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+
+  // --- Helper Functions ---
+  function showToast(message) {
+      toastMessage.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+          toast.classList.remove('show');
+      }, 2500);
+  }
 
   function save() {
     localStorage.setItem("appointments", JSON.stringify(data));
   }
 
+  // --- Modal Controls ---
+  function openModal(isEdit = false) {
+      modal.classList.add('active');
+      if (!isEdit) {
+          modalTitle.textContent = 'Add New Appointment';
+          clearForm();
+          editId = null;
+      }
+  }
+
+  function closeModal() {
+      modal.classList.remove('active');
+      clearForm();
+      editId = null;
+  }
+
+  openModalBtn.addEventListener('click', () => openModal(false));
+  closeModalBtn.addEventListener('click', closeModal);
+  cancelModalBtn.addEventListener('click', closeModal);
+  // Close modal if clicked outside the content
+  modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+  });
+
+  // --- Form Functions ---
+  function clearForm() {
+    document.getElementById("client").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("industry").value = "";
+    document.getElementById("source").value = "";
+    document.getElementById("status").value = "green";
+    document.getElementById("crm").value = "";
+    document.getElementById("notes").value = "";
+  }
+
+  function saveAppointment() {
+    let client = document.getElementById("client").value.trim();
+    let date = document.getElementById("date").value;
+    let industry = document.getElementById("industry").value;
+    let source = document.getElementById("source").value;
+    let status = document.getElementById("status").value;
+    let crm = document.getElementById("crm").value.trim();
+    let notes = document.getElementById("notes").value.trim();
+
+    // Simple validation
+    if (!client || !date) {
+        showToast("Client and Date are required!");
+        // Optionally highlight the fields
+        if (!client) document.getElementById("client").style.borderColor = "red";
+        if (!date) document.getElementById("date").style.borderColor = "red";
+        return;
+    }
+
+    let obj = { id: editId || (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2, 9)), client, date, industry, source, status, crm, notes };
+
+    if (editId === null) {
+      data.push(obj);
+      showToast("Appointment added");
+    } else {
+      const index = data.findIndex(item => item.id === editId);
+      if (index !== -1) {
+          data[index] = obj;
+      }
+      showToast("Appointment updated");
+      editId = null;
+    }
+    save();
+    closeModal();
+    render();
+  }
+
+  function editAppointment(id) {
+      const item = data.find(a => a.id === id);
+      if (!item) return;
+
+      document.getElementById("client").value = item.client || "";
+      document.getElementById("date").value = item.date || "";
+      document.getElementById("industry").value = item.industry || "";
+      document.getElementById("source").value = item.source || "";
+      document.getElementById("status").value = item.status || "green";
+      document.getElementById("crm").value = item.crm || "";
+      document.getElementById("notes").value = item.notes || "";
+
+      editId = id;
+      modalTitle.textContent = 'Edit Appointment';
+      modal.classList.add('active');
+  }
+
+  function deleteAppointment(id) {
+      if (confirm("Are you sure you want to delete this appointment?")) {
+          data = data.filter(item => item.id !== id);
+          save();
+          if (editId === id) editId = null;
+          render();
+          showToast("Appointment deleted");
+      }
+  }
+
+  // --- Calculation Functions (unchanged) ---
   function getSuccessfulThisMonth() {
     const today = new Date();
     return data.filter(a => {
@@ -630,17 +885,15 @@
     document.getElementById("industrySummary").innerText = industryCnt + ' industries';
   }
 
+  // --- Render Functions ---
   function render() {
     const filtered = currentFilter === "all" ? data : data.filter(a => a.status === currentFilter);
     let tbody = document.getElementById("table");
     tbody.innerHTML = "";
-    filtered.forEach((a, idx) => {
-      const originalIndex = data.findIndex(item => 
-        item.client === a.client && item.date === a.date && item.status === a.status && item.notes === a.notes
-      );
+    filtered.forEach((a) => {
       const statusClass = a.status === "green" ? "dot-green" : (a.status === "yellow" ? "dot-yellow" : "dot-orange");
       tbody.innerHTML += `<tr>
-        <td><span class="status-dot ${statusClass}"></span></td>
+        <td><span class="status-dot ${statusClass}" title="${a.status}"></span></td>
         <td>${a.client || ''}</td>
         <td>${a.date || ''}</td>
         <td>${a.industry || '-'}</td>
@@ -648,8 +901,8 @@
         <td>${a.crm ? `<a href="${a.crm}" target="_blank" class="crm-link"><i class="fa-regular fa-link"></i> crm</a>` : '-'}</td>
         <td>${a.notes || ''}</td>
         <td>
-          <button class="action-btn" onclick="edit(${originalIndex})" title="edit"><i class="fa-regular fa-pen-to-square"></i></button>
-          <button class="action-btn" onclick="del(${originalIndex})" title="delete"><i class="fa-regular fa-trash-can"></i></button>
+          <button class="action-btn" onclick="editAppointment('${a.id}')" title="edit"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="action-btn" onclick="deleteAppointment('${a.id}')" title="delete"><i class="fa-regular fa-trash-can"></i></button>
         </td>
       </tr>`;
     });
@@ -659,58 +912,7 @@
     updateSummaryFeatures();
   }
 
-  function add() {
-    let client = document.getElementById("client").value.trim();
-    let date = document.getElementById("date").value;
-    let industry = document.getElementById("industry").value;
-    let source = document.getElementById("source").value;
-    let status = document.getElementById("status").value;
-    let crm = document.getElementById("crm").value.trim();
-    let notes = document.getElementById("notes").value.trim();
-    if (!client || !date) { alert("Client and date required"); return; }
-
-    let obj = { client, date, industry, source, status, crm, notes };
-
-    if (editIndex === null) {
-      data.push(obj);
-    } else {
-      data[editIndex] = obj;
-      editIndex = null;
-    }
-    save();
-    clearForm();
-    render();
-  }
-
-  function clearForm() {
-    document.getElementById("client").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("industry").value = "";
-    document.getElementById("source").value = "";
-    document.getElementById("status").value = "green";
-    document.getElementById("crm").value = "";
-    document.getElementById("notes").value = "";
-  }
-
-  function edit(i) {
-    let a = data[i];
-    document.getElementById("client").value = a.client || "";
-    document.getElementById("date").value = a.date || "";
-    document.getElementById("industry").value = a.industry || "";
-    document.getElementById("source").value = a.source || "";
-    document.getElementById("status").value = a.status || "green";
-    document.getElementById("crm").value = a.crm || "";
-    document.getElementById("notes").value = a.notes || "";
-    editIndex = i;
-  }
-
-  function del(i) {
-    data.splice(i, 1);
-    save();
-    if (editIndex === i) editIndex = null;
-    render();
-  }
-
+  // --- Chart (unchanged) ---
   let chartInstance = null;
   function updateChart() {
     let months = new Array(12).fill(0);
@@ -734,6 +936,7 @@
     });
   }
 
+  // --- Export (unchanged) ---
   function exportCSV() {
     let csv = "Client,Date,Industry,Source,Status,CRM,Notes\n";
     data.forEach(a => {
@@ -744,9 +947,10 @@
     a.href = URL.createObjectURL(blob);
     a.download = "appointments.csv";
     a.click();
+    showToast("CSV exported");
   }
 
-  // filter buttons
+  // --- Filter Controls (unchanged) ---
   document.querySelectorAll('#filterGroup button').forEach(btn => {
     btn.addEventListener('click', function (e) {
       document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active-filter'));
@@ -759,6 +963,14 @@
     document.querySelector('#filterGroup button[data-filter="all"]').click();
   }
 
+  // --- Make functions global for onclick handlers ---
+  window.editAppointment = editAppointment;
+  window.deleteAppointment = deleteAppointment;
+  window.saveAppointment = saveAppointment;
+  window.exportCSV = exportCSV;
+  window.clearCompletedFilter = clearCompletedFilter;
+
+  // Initial render
   render();
 </script>
 </body>
