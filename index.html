@@ -434,6 +434,16 @@
       background:#f1f5f9; border-radius:2rem; padding:0.3rem 1rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.3rem; border:1px dashed #f97316;
     }
     body.dark .insight-chip { background:#0f172a; }
+
+    /* SAT badge highlight */
+    .sat-badge {
+      background: #f97316;
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -471,7 +481,7 @@
   </div>
 </div>
 
-<!-- MODAL (unchanged but status dropdown not needed inside modal) -->
+<!-- MODAL -->
 <div class="modal" id="appointmentModal">
   <div class="modal-content">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
@@ -481,7 +491,7 @@
     <div class="form-group"><label>Client *</label><input id="client" placeholder="e.g. Acme Corp"></div>
     <div class="form-group"><label>Date *</label><input type="date" id="date"></div>
     <div class="form-group"><label>Industry</label><select id="industry"><option value="">Select</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select></div>
-    <div class="form-group"><label>Source (SAT only counts)</label><select id="source"><option value="">Select</option><option>Cold Call</option><option>LinkedIn</option><option>SAT</option><option>Email</option><option>Referral</option></select></div>
+    <div class="form-group"><label>Source (SAT only counts for commission)</label><select id="source"><option value="">Select</option><option>Cold Call</option><option>LinkedIn</option><option>SAT</option><option>Email</option><option>Referral</option></select></div>
     <div class="form-group"><label>Status</label><select id="status"><option value="Pending">⏳ Pending</option><option value="Confirmed">✅ Confirmed</option><option value="Cancelled">❌ Cancelled</option></select></div>
     <div class="form-group"><label>CRM Link</label><input id="crm" placeholder="https://..."></div>
     <div class="form-group">
@@ -526,9 +536,61 @@
 
   // --- DATA MANAGEMENT ---
   let data = JSON.parse(localStorage.getItem("appointments")) || [];
+  
+  // Initialize with test data if empty for demo purposes
+  if (data.length === 0) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    
+    data = [
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : '1',
+        client: 'ABC Construction',
+        date: `${year}-${month}-15`,
+        industry: 'Construction',
+        source: 'SAT',
+        status: 'Confirmed',
+        crm: '',
+        notes: 'Interested in premium package'
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : '2',
+        client: 'XYZ Marketing',
+        date: `${year}-${month}-10`,
+        industry: 'Marketing',
+        source: 'SAT',
+        status: 'Confirmed',
+        crm: '',
+        notes: 'Follow up next week'
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : '3',
+        client: '123 Healthcare',
+        date: `${year}-${month}-05`,
+        industry: 'Healthcare',
+        source: 'SAT',
+        status: 'Pending',
+        crm: '',
+        notes: 'Waiting for approval'
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : '4',
+        client: 'TechStart Inc',
+        date: `${year}-${month}-20`,
+        industry: 'Ecommerce',
+        source: 'LinkedIn',
+        status: 'Confirmed',
+        crm: '',
+        notes: 'Demo scheduled'
+      }
+    ];
+    saveData();
+  }
+
   data = data.map(item => {
     if (!item.id) item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2,9);
-    if (!item.status || !STATUS_CONFIG[item.status]) item.status = 'Pending'; // migrate old
+    if (!item.status || !STATUS_CONFIG[item.status]) item.status = 'Pending';
     if (!item.source) item.source = '';
     return item;
   });
@@ -548,12 +610,19 @@
   const pageTitle = document.getElementById('page-title');
   const insightHint = document.getElementById('insightHint');
 
-  function showToast(msg) { toastMessage.innerText = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
-  function saveData() { localStorage.setItem("appointments", JSON.stringify(data)); }
+  function showToast(msg) { 
+    toastMessage.innerText = msg; 
+    toast.classList.add('show'); 
+    setTimeout(() => toast.classList.remove('show'), 2500); 
+  }
+  
+  function saveData() { 
+    localStorage.setItem("appointments", JSON.stringify(data)); 
+  }
 
-  closeModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
-  cancelModalBtn.addEventListener('click', ()=>modal.classList.remove('active'));
-  modal.addEventListener('click', (e)=> e.target===modal && modal.classList.remove('active'));
+  closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
+  cancelModalBtn.addEventListener('click', () => modal.classList.remove('active'));
+  modal.addEventListener('click', (e) => e.target === modal && modal.classList.remove('active'));
 
   // Simple "AI insight" for notes (second major enhancement: intelligent note scanner)
   insightHint?.addEventListener('click', function() {
@@ -632,16 +701,46 @@
     }
   };
 
-  // --- COMMISSION (strict SAT logic) ---
+  // --- FIXED COMMISSION LOGIC (strict SAT + Confirmed) ---
   function getSATCountThisMonth() {
     const today = new Date();
-    return data.filter(a => a.source === 'SAT' && a.status === 'Confirmed' && new Date(a.date).getMonth() === today.getMonth() && new Date(a.date).getFullYear() === today.getFullYear()).length;
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    return data.filter(item => {
+      // Must be SAT source AND Confirmed status
+      if (item.source !== 'SAT' || item.status !== 'Confirmed') return false;
+      
+      // Parse date and validate
+      const itemDate = new Date(item.date);
+      if (isNaN(itemDate.getTime())) return false;
+      
+      // Check if in current month and year
+      return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+    }).length;
   }
 
   function computeCommission() {
-    const sat = getSATCountThisMonth();
-    if (sat >= 8) return sat * 750;
+    const satCount = getSATCountThisMonth();
+    // Only pay commission if 8 or more SAT confirmed appointments
+    if (satCount >= 8) {
+      return satCount * 750;
+    }
     return 0;
+  }
+
+  // Test function to verify commission logic
+  function testCommissionLogic() {
+    console.log('=== COMMISSION LOGIC TEST ===');
+    const satCount = getSATCountThisMonth();
+    const commission = computeCommission();
+    console.log(`SAT Confirmed this month: ${satCount}`);
+    console.log(`Commission: ${commission} PHP`);
+    console.log('Expected rates:');
+    console.log('- 8 SAT = 6,000 PHP');
+    console.log('- 12 SAT = 9,000 PHP');
+    console.log('- 20 SAT = 15,000 PHP');
+    console.log('============================');
   }
 
   // Other helpers
@@ -658,6 +757,7 @@
     });
     return { week, month, year };
   }
+  
   function getWeekNumber(d) {
     const firstJan = new Date(d.getFullYear(), 0, 1);
     return Math.ceil((((d - firstJan) / 86400000) + firstJan.getDay() + 1) / 7);
@@ -694,10 +794,13 @@
     return months;
   }
 
-  // --- NEW FEATURE 1: quick stats dashboard (high impact) ---
+  // --- NEW FEATURE 1: quick stats dashboard ---
   function renderStatsDashboard() {
     const satConfirmed = getSATCountThisMonth();
-    const totalMonth = data.filter(d => new Date(d.date).getMonth() === new Date().getMonth()).length;
+    const totalMonth = data.filter(d => {
+      const date = new Date(d.date);
+      return !isNaN(date) && date.getMonth() === new Date().getMonth();
+    }).length;
     const pendingCount = data.filter(d => d.status === 'Pending').length;
     const cancelledCount = data.filter(d => d.status === 'Cancelled').length;
     return `
@@ -710,7 +813,7 @@
     `;
   }
 
-  // --- NEW FEATURE 2: quick status dropdown (centralized) + inline update ---
+  // --- Status dropdown update function ---
   window.updateStatusFromDropdown = (appId, newStatus) => {
     const app = data.find(a => a.id === appId);
     if (app) {
@@ -718,6 +821,7 @@
       saveData();
       renderCurrentPage();
       showToast(`Status → ${newStatus}`);
+      testCommissionLogic(); // For debugging
     }
   };
 
@@ -735,7 +839,12 @@
     filtered.forEach(a => {
       const statusConf = STATUS_CONFIG[a.status] || STATUS_CONFIG['Pending'];
       const dotStyle = `background-color: ${statusConf.color};`;
-      const sourceBadge = a.source === 'SAT' ? '<span style="background:#f97316; color:white; padding:0.2rem 0.8rem; border-radius:30px;">SAT</span>' : (a.source || '-');
+      
+      // Show source badge with special styling for SAT
+      let sourceBadge = a.source || '-';
+      if (a.source === 'SAT') {
+        sourceBadge = '<span class="sat-badge">SAT</span>';
+      }
       
       tableRows += `<tr>
         <td>
@@ -768,9 +877,22 @@
     const html = `
       ${renderStatsDashboard()}
       <div class="commission-panel">
-        <div class="commission-left"><h3><i class="fas fa-circle-dollar-to-slot"></i> SAT commission</h3><p>✅ only SAT & confirmed · 8+ → 750 PHP each</p></div>
+        <div class="commission-left">
+          <h3><i class="fas fa-circle-dollar-to-slot"></i> SAT commission</h3>
+          <p>✅ Only SAT source + Confirmed status count</p>
+          <p>🎯 Target: 8 SAT = 6,000 PHP | 12 SAT = 9,000 PHP | 20 SAT = 15,000 PHP</p>
+        </div>
         <div class="commission-highlight"><span>${commission} PHP</span><small>this month</small></div>
-        <div class="progress-wrapper"><div class="progress-label"><span>✅ SAT/target</span><span>${satThisMonth}</span><span>/8</span></div><div class="progress-bg"><div class="progress-fill" style="width:${progressPercent}%;"></div></div></div>
+        <div class="progress-wrapper">
+          <div class="progress-label" style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+            <span>✅ SAT confirmed</span>
+            <span>${satThisMonth} / 8</span>
+          </div>
+          <div class="progress-bg">
+            <div class="progress-fill" style="width:${progressPercent}%;"></div>
+          </div>
+          ${satThisMonth >= 8 ? `<div style="margin-top:0.3rem; color:#f97316; font-weight:600;">✓ Commission active: ${satThisMonth} × 750 PHP = ${commission} PHP</div>` : ''}
+        </div>
       </div>
       <div class="kpi-grid">
         <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${stats.week}</h2><p>this week</p></div>
@@ -791,7 +913,23 @@
         </div>
       </div>
       <div class="table-wrapper">
-        <table><thead><tr><th>status</th><th>client</th><th>date</th><th>industry</th><th>source</th><th>crm</th><th>notes</th><th>actions</th></tr></thead><tbody>${tableRows}</tbody></table>
+        <table>
+          <thead>
+            <tr>
+              <th>status</th>
+              <th>client</th>
+              <th>date</th>
+              <th>industry</th>
+              <th>source</th>
+              <th>crm</th>
+              <th>notes</th>
+              <th>actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows || '<tr><td colspan="8" style="text-align:center; padding:2rem;">No appointments found</td></tr>'}
+          </tbody>
+        </table>
       </div>
     `;
 
@@ -815,12 +953,13 @@
     });
   }
 
-  // helper to close any open dropdown (simple)
+  // helper to close any open dropdown
   window.toggleDropdown = (id) => {
     document.querySelectorAll('.status-dropdown-menu').forEach(m => { if (m.id !== id) m.classList.remove('show'); });
     const menu = document.getElementById(id);
     if (menu) menu.classList.toggle('show');
   };
+  
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.status-dropdown-container')) {
       document.querySelectorAll('.status-dropdown-menu').forEach(m => m.classList.remove('show'));
@@ -833,8 +972,8 @@
     const confirmed = data.filter(d => d.status === 'Confirmed').length;
     const pending = data.filter(d => d.status === 'Pending').length;
     const cancelled = data.filter(d => d.status === 'Cancelled').length;
-    const conversion = total ? Math.round((confirmed / total) * 100) : 0;
     const satConfirmed = getSATCountThisMonth();
+    const satTotal = data.filter(d => d.source === 'SAT').length;
 
     const html = `
       <div class="analytics-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem;">
@@ -843,7 +982,7 @@
         <div class="analytics-card"><h3>Pending</h3><div class="value">${pending}</div></div>
         <div class="analytics-card"><h3>Cancelled</h3><div class="value">${cancelled}</div></div>
         <div class="analytics-card"><h3>SAT this month</h3><div class="value">${satConfirmed}</div></div>
-        <div class="analytics-card"><h3>Conversion</h3><div class="value">${conversion}%</div></div>
+        <div class="analytics-card"><h3>Total SAT</h3><div class="value">${satTotal}</div></div>
       </div>
       <div class="chart-container">
         <canvas id="analyticsChart" style="height:250px; width:100%;"></canvas>
@@ -924,6 +1063,9 @@
     else if (currentPage === 'alerts') renderAlertsPage();
     else if (currentPage === 'sources') renderSourcesPage();
     else if (currentPage === 'noshow') renderNoshowPage();
+    
+    // Run test in console for debugging
+    testCommissionLogic();
   }
 
   function setActiveNav(page) {
@@ -954,7 +1096,9 @@
     if (currentPage === 'appointments') renderAppointmentsPage();
   };
 
+  // Initialize with test data and run
   setActiveNav('appointments');
+  testCommissionLogic();
 </script>
 </body>
 </html>
