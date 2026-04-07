@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>SalesFlow AI Pro · Trusted Commission Hub</title>
-  <!-- Font Awesome 6 (free) & Chart.js -->
+  <!-- Font Awesome 6 & Chart.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -209,6 +209,7 @@
       align-items: center;
       gap: 1rem;
       margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
 
     .main-header h1 {
@@ -245,11 +246,9 @@
 
     @keyframes fade { from { opacity: 0.3; } to { opacity: 1; } }
 
-    /* Status colors */
     .status-dot { width: 12px; height: 12px; border-radius: 20px; display: inline-block; margin-right: 6px; }
     .status-badge { display: inline-flex; align-items: center; padding: 0.3rem 1rem; border-radius: 30px; font-weight: 500; font-size: 0.85rem; background: #f1f5f9; }
 
-    /* Commission panel */
     .commission-panel {
       background: linear-gradient(105deg, #fff3e5, #ffe8d6);
       border-left: 6px solid #f97316;
@@ -318,7 +317,6 @@
     }
     body.dark .feature-badge { background: #1e293b; border-color: #334155; color: #cbd5e1; }
 
-    /* filter group */
     .filter-group {
       display: flex; gap: 6px; background: white; padding: 0.25rem; border-radius: 3rem; border: 1px solid #e2e8f0;
     }
@@ -348,7 +346,6 @@
     td { padding: 0.8rem 1rem 0.8rem 1.5rem; border-bottom: 1px solid #f1f5f9; }
     body.dark td { border-bottom-color: #334155; color: #e2e8f0; }
 
-    /* status dropdown (central) */
     .status-dropdown-container {
       position: relative;
       display: inline-block;
@@ -420,7 +417,6 @@
       width: 100% !important;
     }
 
-    /* Modal */
     .modal { display: none; position: fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px);}
     .modal.active { display:flex; }
     .modal-content { background:white; border-radius:2rem; padding:2rem; max-width:600px; width:90%; max-height:90vh; overflow-y:auto; }
@@ -443,7 +439,6 @@
     }
     .toast.show { transform:translateX(0); }
 
-    /* quick stats dashboard */
     .stats-dashboard {
       display: grid; grid-template-columns: repeat(4,1fr); gap:0.75rem; margin-bottom:1.5rem;
     }
@@ -454,14 +449,12 @@
     .stat-tile i { font-size:1.6rem; color:#f97316; }
     .stat-tile .stat-number { font-size:1.8rem; font-weight:600; }
 
-    /* intelligent notes insight */
     .insight-chip {
       background:#f1f5f9; border-radius:2rem; padding:0.3rem 1rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.3rem; border:1px dashed #f97316;
       cursor: pointer;
     }
     body.dark .insight-chip { background:#0f172a; }
 
-    /* SAT badge highlight */
     .sat-badge {
       background: #f97316;
       color: white;
@@ -493,7 +486,6 @@
       display: block;
     }
 
-    /* Audit trail */
     .audit-trail {
       margin-top: 2rem;
       padding: 1rem;
@@ -520,7 +512,6 @@
       min-width: 100px;
     }
 
-    /* Trust score */
     .trust-score {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -540,8 +531,6 @@
       border-radius: 5px;
       transition: width 0.3s ease;
     }
-
-    /* Validation warning */
     .validation-warning {
       background: #fee2e2;
       border: 1px solid #ef4444;
@@ -557,7 +546,6 @@
       background: #451a1a;
       color: #fecaca;
     }
-
     .data-quality-tip {
       background: #fef3c7;
       border: 1px solid #f59e0b;
@@ -569,17 +557,21 @@
       align-items: center;
       gap: 0.5rem;
     }
+    @media (max-width: 780px) {
+      .app-wrapper { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
+      .sidebar.collapsed { width: 100%; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+      .nav-item { width: auto; }
+      .main-panel { padding: 1rem; }
+    }
   </style>
 </head>
 <body>
 <div class="app-wrapper">
-  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="logo-area">
-        <div class="logo-icon"><i class="fa-regular fa-message"></i></div>
-        <span class="logo-text">SalesFlow AI Pro</span>
-      </div>
+      <div class="logo-area"><div class="logo-icon"><i class="fa-regular fa-message"></i></div><span class="logo-text">SalesFlow AI Pro</span></div>
       <button class="collapse-btn" id="collapseSidebarBtn"><i class="fa-solid fa-chevron-left"></i></button>
     </div>
     <div class="sidebar-nav">
@@ -590,19 +582,13 @@
       <button class="nav-item" id="nav-noshow"><i class="fa-regular fa-clock"></i> <span>No‑show guard</span> <span class="feature-tag">+2</span></button>
       <button class="nav-item" id="nav-audit"><i class="fa-regular fa-clock"></i> <span>Audit Trail</span> <span class="feature-tag">new</span></button>
     </div>
-    <div style="margin-top: auto; padding:1rem 0.5rem; color:#94a3b8; font-size:0.85rem;" id="trustScoreIndicator">
-      <i class="fa-regular fa-circle-check" style="color:#22c55e;"></i> <span>Trust Score: 100%</span>
-    </div>
+    <div style="margin-top: auto; padding:1rem 0.5rem; color:#94a3b8; font-size:0.85rem;" id="trustScoreIndicator"><i class="fa-regular fa-circle-check" style="color:#22c55e;"></i> <span>Trust Score: 100%</span></div>
   </div>
-
-  <!-- MAIN PANEL -->
   <div class="main-panel">
     <div class="main-header">
       <h1 id="page-title"><i class="fas fa-chart-line" style="color:#f97316;"></i> Trusted Commission Hub</h1>
       <div class="theme-toggle" id="themeToggle"><i class="fa-regular fa-sun"></i><i class="fa-regular fa-moon"></i></div>
     </div>
-
-    <!-- Dynamic page content -->
     <div id="page-content-container" class="page-content"></div>
   </div>
 </div>
@@ -610,21 +596,16 @@
 <!-- MODAL -->
 <div class="modal" id="appointmentModal">
   <div class="modal-content">
-    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 id="modalTitle">Add Appointment</h2>
-      <button class="close-modal" id="closeModalBtn" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
-    </div>
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;"><h2 id="modalTitle">Add Appointment</h2><button class="close-modal" id="closeModalBtn" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button></div>
     <div id="validationMessage" class="validation-warning" style="display: none;"></div>
-    <div class="form-group"><label>Client *</label><input id="client" placeholder="e.g. Acme Corp"></div>
-    <div class="form-group"><label>Date *</label><input type="date" id="date"></div>
+    <div class="form-group"><label>Client *</label><input id="client" placeholder="Full name / company"></div>
+    <div class="form-group"><label>Date & Time *</label><input type="datetime-local" id="dateTime"></div>
     <div class="form-group"><label>Industry</label><select id="industry"><option value="">Select</option><option>Construction</option><option>Healthcare</option><option>Ecommerce</option><option>Real Estate</option><option>Marketing</option></select></div>
     <div class="form-group"><label>Source (SAT only counts for commission)</label><select id="source"><option value="">Select</option><option>Cold Call</option><option>LinkedIn</option><option>SAT</option><option>Email</option><option>Referral</option></select></div>
     <div class="form-group"><label>Status</label><select id="status"><option value="Pending">⏳ Pending</option><option value="Confirmed">✅ Confirmed</option><option value="Cancelled">❌ Cancelled</option></select></div>
     <div class="form-group"><label>CRM Link</label><input id="crm" placeholder="https://..."></div>
-    <div class="form-group">
-      <label>Notes <span class="insight-chip" id="insightHint"><i class="fa-regular fa-lightbulb"></i> AI insight ready</span></label>
-      <textarea id="notes" placeholder="Enter notes... (multi-line supported)"></textarea>
-    </div>
+    <div class="form-group"><label>Meeting Platform</label><input id="meetingPlatform" placeholder="e.g. Teams, Zoom, Google Meet"></div>
+    <div class="form-group"><label>Notes</label><textarea id="notes" placeholder="Meeting details, follow-ups..."></textarea></div>
     <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
       <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
       <button class="btn-primary" onclick="saveAppointment()">Save</button>
@@ -632,17 +613,7 @@
   </div>
 </div>
 
-<!-- Audit History Modal -->
-<div class="modal" id="auditModal">
-  <div class="modal-content">
-    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-      <h2>Appointment History</h2>
-      <button class="close-modal" id="closeAuditModalBtn" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
-    </div>
-    <div id="auditHistoryContent"></div>
-  </div>
-</div>
-
+<div class="modal" id="auditModal"><div class="modal-content"><div class="modal-header"><h2>Appointment History</h2><button class="close-modal" id="closeAuditModalBtn" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button></div><div id="auditHistoryContent"></div></div></div>
 <div class="toast" id="toast"><i class="fa-regular fa-circle-check"></i><span id="toastMessage">Saved</span></div>
 
 <script>
@@ -654,7 +625,6 @@
       body.classList.toggle('dark');
       localStorage.setItem('darkMode', body.classList.contains('dark'));
     });
-
     const sidebar = document.getElementById('sidebar');
     const collapseBtn = document.getElementById('collapseSidebarBtn');
     collapseBtn.addEventListener('click', () => {
@@ -665,856 +635,91 @@
     });
   })();
 
-  // --- CENTRALIZED STATUS CONFIG ---
-  const STATUS_CONFIG = {
-    'Pending': { color: '#f97316', label: '⏳ Pending', icon: 'fa-regular fa-clock' },
-    'Confirmed': { color: '#22c55e', label: '✅ Confirmed', icon: 'fa-regular fa-circle-check' },
-    'Cancelled': { color: '#ef4444', label: '❌ Cancelled', icon: 'fa-regular fa-circle-xmark' }
-  };
-
-  // --- AUDIT TRAIL ---
+  const STATUS_CONFIG = { 'Pending': { color: '#f97316', label: '⏳ Pending' }, 'Confirmed': { color: '#22c55e', label: '✅ Confirmed' }, 'Cancelled': { color: '#ef4444', label: '❌ Cancelled' } };
   let auditLog = JSON.parse(localStorage.getItem("auditLog")) || [];
-
-  function addAuditEntry(action, details, appointmentId = null) {
-    const entry = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2,9),
-      timestamp: new Date().toISOString(),
-      action: action,
-      details: details,
-      appointmentId: appointmentId,
-      user: 'Current User' // In real app, this would be actual user
-    };
-    auditLog.unshift(entry); // Most recent first
-    // Keep only last 100 entries
-    if (auditLog.length > 100) auditLog = auditLog.slice(0, 100);
-    localStorage.setItem("auditLog", JSON.stringify(auditLog));
-  }
-
-  // --- DATA MANAGEMENT ---
+  function addAuditEntry(action, details, appointmentId = null) { auditLog.unshift({ id: crypto.randomUUID?.() || Date.now(), timestamp: new Date().toISOString(), action, details, appointmentId }); if (auditLog.length > 100) auditLog = auditLog.slice(0,100); localStorage.setItem("auditLog", JSON.stringify(auditLog)); }
+  
   let data = JSON.parse(localStorage.getItem("appointments")) || [];
-  
-  // Initialize with test data if empty
-  if (data.length === 0) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    
-    data = [
-      {
-        id: crypto.randomUUID ? crypto.randomUUID() : '1',
-        client: 'ABC Construction',
-        date: `${year}-${month}-15`,
-        industry: 'Construction',
-        source: 'SAT',
-        status: 'Confirmed',
-        crm: '',
-        notes: 'Interested in premium package',
-        verified: true
-      },
-      {
-        id: crypto.randomUUID ? crypto.randomUUID() : '2',
-        client: 'XYZ Marketing',
-        date: `${year}-${month}-10`,
-        industry: 'Marketing',
-        source: 'SAT',
-        status: 'Confirmed',
-        crm: '',
-        notes: 'Follow up next week',
-        verified: true
-      },
-      {
-        id: crypto.randomUUID ? crypto.randomUUID() : '3',
-        client: '123 Healthcare',
-        date: `${year}-${month}-05`,
-        industry: 'Healthcare',
-        source: 'SAT',
-        status: 'Pending',
-        crm: '',
-        notes: 'Waiting for approval',
-        verified: false
-      },
-      {
-        id: crypto.randomUUID ? crypto.randomUUID() : '4',
-        client: 'TechStart Inc',
-        date: `${year}-${month}-20`,
-        industry: 'Ecommerce',
-        source: 'LinkedIn',
-        status: 'Confirmed',
-        crm: '',
-        notes: 'Demo scheduled',
-        verified: false
-      }
-    ];
-    
-    // Add audit entries for initial data
-    data.forEach(item => {
-      addAuditEntry('CREATE', `Created appointment for ${item.client}`, item.id);
-    });
-    saveData();
-  }
-
-  data = data.map(item => {
-    if (!item.id) {
-      item.id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substr(2,9);
-    }
-    if (!item.status || !STATUS_CONFIG[item.status]) item.status = 'Pending';
-    if (!item.source) item.source = '';
-    if (item.verified === undefined) item.verified = item.source === 'SAT' ? true : false;
-    return item;
-  });
+  if (data.length === 0) { const y = new Date().getFullYear(), m = String(new Date().getMonth()+1).padStart(2,'0'); data = [ { id: crypto.randomUUID?.()||'1', client: 'ABC Construction', date: `${y}-${m}-15T14:00`, industry: 'Construction', source: 'SAT', status: 'Confirmed', crm: '', notes: 'Interested in premium', verified: true, meeting: 'Teams' }, { id: crypto.randomUUID?.()||'2', client: 'XYZ Marketing', date: `${y}-${m}-10T11:30`, industry: 'Marketing', source: 'SAT', status: 'Confirmed', crm: '', notes: 'Follow up', verified: true, meeting: 'Zoom' } ]; data.forEach(item => addAuditEntry('CREATE', `Created ${item.client}`, item.id)); saveData(); }
+  data = data.map(item => ({ ...item, verified: item.source === 'SAT' ? true : (item.verified||false), id: item.id || crypto.randomUUID?.()||Date.now() }));
   saveData();
-
-  let editId = null;
-  let currentFilter = "all";
-  let currentPage = "appointments";
-  let analyticsChart = null;
-
-  const modal = document.getElementById('appointmentModal');
-  const auditModal = document.getElementById('auditModal');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const cancelModalBtn = document.getElementById('cancelModalBtn');
-  const closeAuditModalBtn = document.getElementById('closeAuditModalBtn');
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toastMessage');
-  const pageContainer = document.getElementById('page-content-container');
-  const pageTitle = document.getElementById('page-title');
-  const insightHint = document.getElementById('insightHint');
-  const validationMessage = document.getElementById('validationMessage');
-
-  function showToast(msg) { 
-    toastMessage.innerText = msg; 
-    toast.classList.add('show'); 
-    setTimeout(() => toast.classList.remove('show'), 2500); 
-  }
-  
-  function saveData() { 
-    localStorage.setItem("appointments", JSON.stringify(data)); 
-    updateTrustScore();
-  }
-
+  let editId = null, currentFilter = "all", currentPage = "appointments", analyticsChart = null;
+  const modal = document.getElementById('appointmentModal'), auditModal = document.getElementById('auditModal'), closeModalBtn = document.getElementById('closeModalBtn'), cancelModalBtn = document.getElementById('cancelModalBtn'), closeAuditModalBtn = document.getElementById('closeAuditModalBtn'), toast = document.getElementById('toast'), toastMessage = document.getElementById('toastMessage'), pageContainer = document.getElementById('page-content-container'), pageTitle = document.getElementById('page-title');
+  function showToast(msg) { toastMessage.innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
+  function saveData() { localStorage.setItem("appointments", JSON.stringify(data)); updateTrustScore(); }
   closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
   cancelModalBtn.addEventListener('click', () => modal.classList.remove('active'));
   modal.addEventListener('click', (e) => e.target === modal && modal.classList.remove('active'));
-  
   closeAuditModalBtn.addEventListener('click', () => auditModal.classList.remove('active'));
   auditModal.addEventListener('click', (e) => e.target === auditModal && auditModal.classList.remove('active'));
 
-  // Data quality check function
-  function validateAppointmentData(client, date, source) {
-    const warnings = [];
-    
-    if (!client || client.trim().length < 2) {
-      warnings.push("Client name must be at least 2 characters");
-    }
-    
-    if (!date) {
-      warnings.push("Date is required");
-    } else {
-      const selectedDate = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      // Check for duplicate appointments (same client and date)
-      const duplicate = data.find(item => 
-        item.client.toLowerCase() === client.toLowerCase() && 
-        item.date === date &&
-        item.id !== editId
-      );
-      
-      if (duplicate) {
-        warnings.push("An appointment with this client already exists on this date");
-      }
-    }
-    
-    if (source === 'SAT' && !editId) {
-      // Check if SAT source is being used appropriately
-      const satCount = data.filter(item => item.source === 'SAT').length;
-      if (satCount > 50) {
-        warnings.push("Unusually high number of SAT sources detected");
-      }
-    }
-    
-    return warnings;
+  function checkDuplicate(clientRaw, dateTimeRaw, excludeId) {
+    if (!clientRaw || !dateTimeRaw) return false;
+    return data.some(item => item.client.toLowerCase() === clientRaw.toLowerCase() && item.date === dateTimeRaw && item.id !== excludeId);
   }
-
-  // Insight hint functionality
-  if (insightHint) {
-    insightHint.addEventListener('click', function() {
-      const notesField = document.getElementById('notes');
-      let text = notesField.value.trim();
-      if (!text) {
-        notesField.value = "✨ no notes to analyze";
-        return;
-      }
-      const words = text.split(/\s+/).length;
-      const hasPhone = (text.includes('+') || text.includes('09')) ? '📞 contact' : '';
-      const hasEmail = text.includes('@') ? '📧 email' : '';
-      const followUp = text.toLowerCase().includes('follow') ? '🔄 follow-up needed' : '';
-      const insight = [hasPhone, hasEmail, followUp, `📝 ${words} words`].filter(Boolean).join(' · ');
-      notesField.value = text + `\n(insight: ${insight})`;
-      showToast('insight added');
-    });
-  }
-
-  function clearForm() {
-    document.getElementById("client").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("industry").value = "";
-    document.getElementById("source").value = "";
-    document.getElementById("status").value = "Pending";
-    document.getElementById("crm").value = "";
-    document.getElementById("notes").value = "";
-    validationMessage.style.display = 'none';
-  }
-
   window.saveAppointment = function() {
     let client = document.getElementById("client").value.trim();
-    let date = document.getElementById("date").value;
+    let dateTime = document.getElementById("dateTime").value;
     let source = document.getElementById("source").value;
-    
-    // Validate data
-    const warnings = validateAppointmentData(client, date, source);
-    if (warnings.length > 0) {
-      validationMessage.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> ' + warnings.join('<br>');
-      validationMessage.style.display = 'block';
-      return;
-    }
-    
-    if (!client || !date) { 
-      validationMessage.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Client and Date are required!';
-      validationMessage.style.display = 'block';
-      return; 
-    }
-    
-    let obj = {
-      id: editId || (crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(36).substr(2,9)),
-      client, date,
-      industry: document.getElementById("industry").value,
-      source: source,
-      status: document.getElementById("status").value,
-      crm: document.getElementById("crm").value.trim(),
-      notes: document.getElementById("notes").value.trim(),
-      verified: source === 'SAT' // Auto-verify SAT sources
-    };
-    
-    if (editId) {
-      let idx = data.findIndex(i => i.id === editId);
-      if (idx >= 0) {
-        let oldData = {...data[idx]};
-        data[idx] = obj;
-        addAuditEntry('UPDATE', `Updated appointment for ${client}`, editId);
-        showToast("Updated");
-      }
-    } else {
-      data.push(obj);
-      addAuditEntry('CREATE', `Created new appointment for ${client}`, obj.id);
-      showToast("Added");
-    }
-    saveData();
-    modal.classList.remove('active');
-    renderCurrentPage();
+    if (!client || !dateTime) { document.getElementById("validationMessage").innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Client & Date/Time required'; document.getElementById("validationMessage").style.display = 'block'; return; }
+    if (checkDuplicate(client, dateTime, editId)) { document.getElementById("validationMessage").innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Duplicate: same client & datetime already exists.'; document.getElementById("validationMessage").style.display = 'block'; return; }
+    let obj = { id: editId || (crypto.randomUUID?.() || Date.now()+'-'+Math.random()), client, date: dateTime, industry: document.getElementById("industry").value, source, status: document.getElementById("status").value, crm: document.getElementById("crm").value.trim(), meeting: document.getElementById("meetingPlatform").value.trim() || "Teams", notes: document.getElementById("notes").value.trim(), verified: source === 'SAT' };
+    if (editId) { let idx = data.findIndex(i => i.id === editId); if (idx>=0) { data[idx] = obj; addAuditEntry('UPDATE', `Updated ${client}`, editId); showToast("Updated"); } }
+    else { data.push(obj); addAuditEntry('CREATE', `Created ${client}`, obj.id); showToast("Added"); }
+    saveData(); modal.classList.remove('active'); renderCurrentPage();
   };
-
-  window.editAppointment = (id) => {
-    let item = data.find(a => a.id === id);
-    if (!item) return;
-    document.getElementById("client").value = item.client || "";
-    document.getElementById("date").value = item.date || "";
-    document.getElementById("industry").value = item.industry || "";
-    document.getElementById("source").value = item.source || "";
-    document.getElementById("status").value = item.status || "Pending";
-    document.getElementById("crm").value = item.crm || "";
-    document.getElementById("notes").value = item.notes || "";
-    editId = id;
-    document.getElementById('modalTitle').innerText = 'Edit Appointment';
-    validationMessage.style.display = 'none';
-    modal.classList.add('active');
-  };
-
-  window.deleteAppointment = (id) => {
-    if (confirm("Delete this appointment?")) {
-      let item = data.find(i => i.id === id);
-      data = data.filter(i => i.id !== id);
-      if (item) {
-        addAuditEntry('DELETE', `Deleted appointment for ${item.client}`, id);
-      }
-      saveData();
-      if (editId === id) editId = null;
-      renderCurrentPage();
-      showToast("Deleted");
-    }
-  };
-
-  window.viewHistory = (id) => {
-    const item = data.find(a => a.id === id);
-    const history = auditLog.filter(entry => entry.appointmentId === id);
-    
-    let html = `<h3>History for ${item ? item.client : 'Appointment'}</h3>`;
-    if (history.length === 0) {
-      html += '<p>No history available</p>';
-    } else {
-      html += '<div class="audit-trail">';
-      history.forEach(entry => {
-        const date = new Date(entry.timestamp);
-        html += `
-          <div class="audit-entry">
-            <span class="audit-time">${date.toLocaleString()}</span>
-            <span><strong>${entry.action}</strong></span>
-            <span>${entry.details}</span>
-          </div>
-        `;
-      });
-      html += '</div>';
-    }
-    
-    document.getElementById('auditHistoryContent').innerHTML = html;
-    auditModal.classList.add('active');
-  };
-
-  window.verifySource = (id) => {
-    const item = data.find(a => a.id === id);
-    if (item) {
-      item.verified = !item.verified;
-      addAuditEntry('VERIFY', `${item.verified ? 'Verified' : 'Unverified'} source for ${item.client}`, id);
-      saveData();
-      renderCurrentPage();
-      showToast(`Source ${item.verified ? 'verified' : 'unverified'}`);
-    }
-  };
-
-  // --- ENHANCED COMMISSION LOGIC ---
-  function getSATCountThisMonth() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    
-    return data.filter(item => {
-      if (item.source !== 'SAT' || item.status !== 'Confirmed') return false;
-      const itemDate = new Date(item.date);
-      if (isNaN(itemDate.getTime())) return false;
-      return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
-    }).length;
-  }
-
-  function computeCommission() {
-    const satCount = getSATCountThisMonth();
-    if (satCount >= 8) {
-      return satCount * 750;
-    }
-    return 0;
-  }
-
-  function getCommissionBreakdown() {
-    const satCount = getSATCountThisMonth();
-    if (satCount < 8) {
-      return `Need ${8 - satCount} more SAT confirmations to earn commission`;
-    } else if (satCount < 12) {
-      return `${satCount} × 750 = ${satCount * 750} PHP (Base rate)`;
-    } else if (satCount < 20) {
-      return `${satCount} × 750 = ${satCount * 750} PHP (Achieved tier 2)`;
-    } else {
-      return `${satCount} × 750 = ${satCount * 750} PHP (Maximum tier)`;
-    }
-  }
-
-  // --- TRUST SCORE CALCULATION ---
-  function calculateTrustScore() {
-    if (data.length === 0) return 100;
-    
-    let score = 100;
-    let issues = [];
-    
-    data.forEach(item => {
-      // Check for missing data
-      if (!item.client) score -= 2;
-      if (!item.date) score -= 2;
-      if (!item.source) score -= 1;
-      if (!item.status) score -= 2;
-      
-      // Check date validity
-      const date = new Date(item.date);
-      if (isNaN(date.getTime())) score -= 5;
-      
-      // Check for inconsistencies
-      if (item.source === 'SAT' && item.status === 'Confirmed' && !item.verified) {
-        score -= 3;
-        issues.push('Unverified SAT sources');
-      }
-      
-      // Check CRM link format
-      if (item.crm && !item.crm.startsWith('http')) {
-        score -= 1;
-      }
-    });
-    
-    // Check for duplicate appointments
-    const seen = new Set();
-    data.forEach(item => {
-      const key = `${item.client}-${item.date}`;
-      if (seen.has(key)) score -= 5;
-      seen.add(key);
-    });
-    
-    // Update trust score indicator
-    const trustEl = document.getElementById('trustScoreIndicator');
-    if (trustEl) {
-      let trustClass = '';
-      if (score >= 90) trustClass = '#22c55e';
-      else if (score >= 70) trustClass = '#f97316';
-      else trustClass = '#ef4444';
-      
-      trustEl.innerHTML = `<i class="fa-regular fa-circle-check" style="color:${trustClass};"></i> <span>Trust Score: ${Math.max(0, score)}%</span>`;
-    }
-    
-    return { score: Math.max(0, score), issues };
-  }
-
-  function updateTrustScore() {
-    calculateTrustScore();
-  }
-
-  // Other helper functions
-  function getStats() {
-    const today = new Date();
-    let week = 0, month = 0, year = 0;
-    const currentWeek = getWeekNumber(today);
-    data.forEach(a => {
-      const d = new Date(a.date);
-      if (isNaN(d)) return;
-      if (d.getFullYear() === today.getFullYear()) year++;
-      if (d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()) month++;
-      if (d.getFullYear() === today.getFullYear() && getWeekNumber(d) === currentWeek) week++;
-    });
-    return { week, month, year };
-  }
-  
-  function getWeekNumber(d) {
-    const firstJan = new Date(d.getFullYear(), 0, 1);
-    return Math.ceil((((d - firstJan) / 86400000) + firstJan.getDay() + 1) / 7);
-  }
-
-  function getTopSource() {
-    const sources = data.map(d => d.source).filter(Boolean);
-    if (!sources.length) return '-';
-    const freq = sources.reduce((acc, s) => { acc[s] = (acc[s] || 0) + 1; return acc; }, {});
-    return Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
-  }
-
-  function calculateStreak() {
-    const confirmed = data.filter(a => a.status === 'Confirmed')
-      .map(a => new Date(a.date).toDateString())
-      .filter((v,i,s) => s.indexOf(v) === i)
-      .sort((a,b) => new Date(a) - new Date(b));
-    if (!confirmed.length) return 0;
-    let max = 1, cur = 1;
-    for (let i = 1; i < confirmed.length; i++) {
-      const prev = new Date(confirmed[i-1]), curr = new Date(confirmed[i]);
-      const diff = (curr - prev) / (1000*3600*24);
-      if (diff === 1) cur++; else { max = Math.max(max, cur); cur = 1; }
-    }
-    return Math.max(max, cur);
-  }
-
-  function getMonthlyData() {
-    const months = new Array(12).fill(0);
-    data.forEach(a => {
-      const d = new Date(a.date);
-      if (!isNaN(d)) months[d.getMonth()]++;
-    });
-    return months;
-  }
-
-  // --- RENDER FUNCTIONS ---
-  function renderStatsDashboard() {
-    const satConfirmed = getSATCountThisMonth();
-    const totalMonth = data.filter(d => {
-      const date = new Date(d.date);
-      return !isNaN(date) && date.getMonth() === new Date().getMonth();
-    }).length;
-    const pendingCount = data.filter(d => d.status === 'Pending').length;
-    const cancelledCount = data.filter(d => d.status === 'Cancelled').length;
-    const trustScore = calculateTrustScore();
-    
-    let qualityTip = '';
-    if (trustScore.score < 80) {
-      qualityTip = '<div class="data-quality-tip"><i class="fa-regular fa-circle-exclamation"></i> Some data needs attention</div>';
-    }
-    
-    return `
-      ${qualityTip}
-      <div class="stats-dashboard">
-        <div class="stat-tile"><i class="fa-regular fa-calendar"></i><div class="stat-number">${totalMonth}</div><span>month total</span></div>
-        <div class="stat-tile"><i class="fa-regular fa-clock" style="color:#f97316;"></i><div class="stat-number">${pendingCount}</div><span>pending</span></div>
-        <div class="stat-tile"><i class="fa-regular fa-circle-xmark" style="color:#ef4444;"></i><div class="stat-number">${cancelledCount}</div><span>cancelled</span></div>
-        <div class="stat-tile"><i class="fa-regular fa-star" style="color:#22c55e;"></i><div class="stat-number">${satConfirmed}</div><span>SAT confirmed</span></div>
-      </div>
-    `;
-  }
-
-  window.updateStatusFromDropdown = (appId, newStatus) => {
-    const app = data.find(a => a.id === appId);
-    if (app) {
-      let oldStatus = app.status;
-      app.status = newStatus;
-      addAuditEntry('STATUS_CHANGE', `Changed status from ${oldStatus} to ${newStatus} for ${app.client}`, appId);
-      saveData();
-      renderCurrentPage();
-      showToast(`Status → ${newStatus}`);
-      
-      // Test commission logic
-      console.log('Commission update:', {
-        satCount: getSATCountThisMonth(),
-        commission: computeCommission(),
-        breakdown: getCommissionBreakdown()
-      });
-    }
-  };
-
-  window.toggleDropdown = (id) => {
-    document.querySelectorAll('.status-dropdown-menu').forEach(m => { if (m.id !== id) m.classList.remove('show'); });
-    const menu = document.getElementById(id);
-    if (menu) menu.classList.toggle('show');
-  };
-  
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.status-dropdown-container')) {
-      document.querySelectorAll('.status-dropdown-menu').forEach(m => m.classList.remove('show'));
-    }
-  });
-
+  window.editAppointment = (id) => { let item = data.find(a => a.id === id); if(!item) return; document.getElementById("client").value = item.client||""; document.getElementById("dateTime").value = item.date||""; document.getElementById("industry").value = item.industry||""; document.getElementById("source").value = item.source||""; document.getElementById("status").value = item.status||"Pending"; document.getElementById("crm").value = item.crm||""; document.getElementById("meetingPlatform").value = item.meeting||""; document.getElementById("notes").value = item.notes||""; editId = id; document.getElementById('modalTitle').innerText = 'Edit Appointment'; document.getElementById("validationMessage").style.display = 'none'; modal.classList.add('active'); };
+  window.deleteAppointment = (id) => { if(confirm("Delete?")){ let item = data.find(i=>i.id===id); data = data.filter(i=>i.id!==id); if(item) addAuditEntry('DELETE', `Deleted ${item.client}`, id); saveData(); if(editId===id) editId=null; renderCurrentPage(); showToast("Deleted"); } };
+  window.viewHistory = (id) => { let item = data.find(a=>a.id===id); let history = auditLog.filter(e=>e.appointmentId===id); let html = `<h3>History for ${item?.client||'Appointment'}</h3>`; if(!history.length) html+='<p>No history</p>'; else { html+='<div class="audit-trail">'; history.forEach(entry=>{ let d=new Date(entry.timestamp); html+=`<div class="audit-entry"><span class="audit-time">${d.toLocaleString()}</span><span><strong>${entry.action}</strong></span><span>${entry.details}</span></div>`; }); html+='</div>'; } document.getElementById('auditHistoryContent').innerHTML = html; auditModal.classList.add('active'); };
+  window.verifySource = (id) => { let item = data.find(a=>a.id===id); if(item){ item.verified=!item.verified; addAuditEntry('VERIFY', `${item.verified?'Verified':'Unverified'} ${item.client}`, id); saveData(); renderCurrentPage(); showToast(`Source ${item.verified?'verified':'unverified'}`); } };
+  function getSATCountThisMonth() { const now = new Date(); return data.filter(i => i.source === 'SAT' && i.status === 'Confirmed' && new Date(i.date).getMonth() === now.getMonth() && new Date(i.date).getFullYear() === now.getFullYear()).length; }
+  function computeCommission() { let cnt = getSATCountThisMonth(); return cnt >= 8 ? cnt * 750 : 0; }
+  function getCommissionBreakdown() { let cnt = getSATCountThisMonth(); if(cnt<8) return `Need ${8-cnt} more SAT confirmations`; return `${cnt} × 750 = ${cnt*750} PHP`; }
+  function calculateTrustScore() { let score = 100, issues = []; data.forEach(i=>{ if(!i.client) score-=2; if(!i.date) score-=2; if(i.source==='SAT' && i.status==='Confirmed' && !i.verified) { score-=3; issues.push('Unverified SAT'); } }); const seen = new Set(); data.forEach(i=>{ let key=`${i.client}-${i.date}`; if(seen.has(key)) score-=5; seen.add(key); }); let final = Math.max(0,score); const trustEl = document.getElementById('trustScoreIndicator'); if(trustEl) trustEl.innerHTML = `<i class="fa-regular fa-circle-check" style="color:${final>=90?'#22c55e':final>=70?'#f97316':'#ef4444'};"></i> <span>Trust Score: ${final}%</span>`; return { score: final, issues }; }
+  function updateTrustScore() { calculateTrustScore(); }
+  function getStats() { const today = new Date(); let week=0,month=0,year=0; const wNum = (d)=>{ let fJan=new Date(d.getFullYear(),0,1); return Math.ceil(((d-fJan)/86400000+fJan.getDay()+1)/7); }; data.forEach(a=>{ let d=new Date(a.date); if(isNaN(d)) return; if(d.getFullYear()===today.getFullYear()) year++; if(d.getMonth()===today.getMonth() && d.getFullYear()===today.getFullYear()) month++; if(d.getFullYear()===today.getFullYear() && wNum(d)===wNum(today)) week++; }); return {week,month,year}; }
+  function getTopSource() { let freq = {}; data.forEach(d=>{ if(d.source) freq[d.source]=(freq[d.source]||0)+1; }); let entries = Object.entries(freq); if(!entries.length) return '-'; return entries.sort((a,b)=>b[1]-a[1])[0][0]; }
+  function calculateStreak() { let confirmedDates = data.filter(a=>a.status==='Confirmed').map(a=>new Date(a.date).toDateString()).filter((v,i,s)=>s.indexOf(v)===i).sort((a,b)=>new Date(a)-new Date(b)); if(!confirmedDates.length) return 0; let max=1,cur=1; for(let i=1;i<confirmedDates.length;i++){ let diff = (new Date(confirmedDates[i]) - new Date(confirmedDates[i-1]))/86400000; if(diff===1) cur++; else { max=Math.max(max,cur); cur=1; } } return Math.max(max,cur); }
+  function getMonthlyData() { let months = new Array(12).fill(0); data.forEach(a=>{ let d=new Date(a.date); if(!isNaN(d)) months[d.getMonth()]++; }); return months; }
+  window.updateStatusFromDropdown = (appId, newStatus) => { let app = data.find(a=>a.id===appId); if(app){ let old=app.status; app.status=newStatus; addAuditEntry('STATUS_CHANGE', `${app.client}: ${old} → ${newStatus}`, appId); saveData(); renderCurrentPage(); showToast(`Status → ${newStatus}`); } };
+  window.toggleDropdown = (id) => { document.querySelectorAll('.status-dropdown-menu').forEach(m=>{ if(m.id!==id) m.classList.remove('show'); }); let menu = document.getElementById(id); if(menu) menu.classList.toggle('show'); };
+  document.addEventListener('click', (e) => { if(!e.target.closest('.status-dropdown-container')) document.querySelectorAll('.status-dropdown-menu').forEach(m=>m.classList.remove('show')); });
   function renderAppointmentsPage() {
-    const filtered = currentFilter === "all" ? data : data.filter(a => a.status === currentFilter);
-    const stats = getStats();
-    const satThisMonth = getSATCountThisMonth();
-    const commission = computeCommission();
-    const progressPercent = Math.min((satThisMonth / 8) * 100, 100);
-    const topSource = getTopSource();
-    const streak = calculateStreak();
-    const commissionEarned = satThisMonth >= 8;
-
-    let tableRows = '';
-    filtered.forEach(a => {
-      const statusConf = STATUS_CONFIG[a.status] || STATUS_CONFIG['Pending'];
-      const dotStyle = `background-color: ${statusConf.color};`;
-      
-      let sourceBadge = a.source || '-';
-      if (a.source === 'SAT') {
-        sourceBadge = `<span class="sat-badge ${a.verified ? 'verified' : ''}" onclick="verifySource('${a.id}')" style="cursor:pointer;">SAT ${a.verified ? '✓' : '?'}</span>`;
-      }
-      
-      tableRows += `<tr>
-        <td>
-          <div class="status-dropdown-container">
-            <button class="status-dropdown-btn" onclick="event.stopPropagation(); toggleDropdown('dropdown-${a.id}')">
-              <span class="status-dot" style="${dotStyle}"></span> ${statusConf.label} <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>
-            </button>
-            <div id="dropdown-${a.id}" class="status-dropdown-menu">
-              ${Object.entries(STATUS_CONFIG).map(([key, val]) => `
-                <div class="status-option" onclick="updateStatusFromDropdown('${a.id}','${key}'); event.stopPropagation();">
-                  <span class="status-dot" style="background-color: ${val.color};"></span> ${val.label}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </td>
-        <td>${a.client || ''}</td>
-        <td>${a.date || ''}</td>
-        <td>${a.industry || '-'}</td>
-        <td>${sourceBadge}</td>
-        <td>${a.crm ? `<a href="${a.crm}" target="_blank"><i class="fa-regular fa-link"></i> link</a>` : '-'}</td>
-        <td>${a.notes ? (a.notes.length > 30 ? a.notes.substring(0,27)+'…' : a.notes) : ''}</td>
-        <td>
-          <button class="action-btn" onclick="editAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-          <button class="action-btn" onclick="viewHistory('${a.id}')" style="background:none; border:none; cursor:pointer;" title="History"><i class="fa-regular fa-clock"></i></button>
-          <button class="action-btn" onclick="deleteAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
-        </td>
-      </tr>`;
+    let filtered = currentFilter==="all"? data : data.filter(a=>a.status===currentFilter);
+    let stats=getStats(); let satThisMonth=getSATCountThisMonth(); let commission=computeCommission(); let progressPercent=Math.min((satThisMonth/8)*100,100); let topSource=getTopSource(); let streak=calculateStreak(); let commissionEarned=satThisMonth>=8;
+    let tableRows='';
+    filtered.forEach(a=>{
+      let statusConf=STATUS_CONFIG[a.status]||STATUS_CONFIG['Pending'];
+      let dotStyle=`background-color: ${statusConf.color};`;
+      let sourceBadge=a.source||'-';
+      if(a.source==='SAT') sourceBadge=`<span class="sat-badge ${a.verified?'verified':''}" onclick="verifySource('${a.id}')" style="cursor:pointer;">SAT ${a.verified?'✓':'?'}</span>`;
+      let meetingInfo = a.meeting ? `<i class="fa-regular fa-video"></i> ${a.meeting}` : '-';
+      tableRows+=`<tr><td><div class="status-dropdown-container"><button class="status-dropdown-btn" onclick="event.stopPropagation(); toggleDropdown('dropdown-${a.id}')"><span class="status-dot" style="${dotStyle}"></span> ${statusConf.label} <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></button><div id="dropdown-${a.id}" class="status-dropdown-menu">${Object.entries(STATUS_CONFIG).map(([key,val])=>`<div class="status-option" onclick="updateStatusFromDropdown('${a.id}','${key}'); event.stopPropagation();"><span class="status-dot" style="background-color:${val.color};"></span> ${val.label}</div>`).join('')}</div></div></td><td>${a.client||''}</td><td>${new Date(a.date).toLocaleString()}</td><td>${a.industry||'-'}</td><td>${sourceBadge}</td><td>${meetingInfo}</td><td>${a.crm?`<a href="${a.crm}" target="_blank"><i class="fa-regular fa-link"></i> CRM</a>`:'-'}</td><td>${a.notes?(a.notes.length>30?a.notes.substring(0,27)+'…':a.notes):''}</td><td><button class="action-btn" onclick="editAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button> <button class="action-btn" onclick="viewHistory('${a.id}')" style="background:none; border:none; cursor:pointer;" title="History"><i class="fa-regular fa-clock"></i></button> <button class="action-btn" onclick="deleteAppointment('${a.id}')" style="background:none; border:none; cursor:pointer;" title="Delete"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
     });
-
-    const html = `
-      ${renderStatsDashboard()}
-      <div class="commission-panel ${commissionEarned ? 'commission-earned' : ''}">
-        <div class="commission-left">
-          <h3><i class="fas fa-circle-dollar-to-slot"></i> SAT commission</h3>
-          <p>✅ Only SAT source + Confirmed status count</p>
-          <p>🎯 Target: 8 SAT = 6,000 PHP | 12 SAT = 9,000 PHP | 20 SAT = 15,000 PHP</p>
-        </div>
-        <div class="commission-highlight" data-tooltip="${getCommissionBreakdown()}"><span>${commission} PHP</span><small>this month</small></div>
-        <div class="progress-wrapper">
-          <div class="progress-label" style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-            <span>✅ SAT confirmed</span>
-            <span>${satThisMonth} / 8</span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-fill ${commissionEarned ? 'earned' : ''}" style="width:${progressPercent}%;"></div>
-          </div>
-          ${commissionEarned ? 
-            `<div style="margin-top:0.3rem; color:#22c55e; font-weight:600;">✓ Commission active: ${satThisMonth} × 750 PHP = ${commission} PHP</div>` : 
-            `<div style="margin-top:0.3rem; color:#f97316; font-weight:600;">${8 - satThisMonth} more to earn commission</div>`
-          }
-        </div>
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${stats.week}</h2><p>this week</p></div>
-        <div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2>${stats.month}</h2><p>this month</p></div>
-        <div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2>${stats.year}</h2><p>this year</p></div>
-      </div>
-      <div class="feature-bar">
-        <div class="feature-badge"><i class="fa-regular fa-star"></i> top source: ${topSource}</div>
-        <div class="feature-badge"><i class="fa-regular fa-fire"></i> streak: ${streak}</div>
-        <div class="filter-group" id="filterGroup">
-          <button class="${currentFilter==='all'?'active-filter':''}" data-filter="all">All</button>
-          ${Object.keys(STATUS_CONFIG).map(s => `<button class="${currentFilter===s?'active-filter':''}" data-filter="${s}">${STATUS_CONFIG[s].label}</button>`).join('')}
-        </div>
-        <div class="action-button-group">
-          <button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New</button>
-          <button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button>
-          <button class="btn-secondary" onclick="clearFilter()"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button>
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>status</th>
-              <th>client</th>
-              <th>date</th>
-              <th>industry</th>
-              <th>source</th>
-              <th>crm</th>
-              <th>notes</th>
-              <th>actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows || '<tr><td colspan="8" style="text-align:center; padding:2rem;">No appointments found</td></tr>'}
-          </tbody>
-        </table>
-      </div>
-    `;
-
-    pageContainer.innerHTML = html;
-    pageTitle.innerHTML = '<i class="fas fa-chart-line" style="color:#f97316;"></i> Trusted Commission Hub';
-
-    document.querySelectorAll('#filterGroup button').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        document.querySelectorAll('#filterGroup button').forEach(b => b.classList.remove('active-filter'));
-        this.classList.add('active-filter');
-        currentFilter = this.dataset.filter;
-        renderAppointmentsPage();
-      });
-    });
-
-    const openAddModalBtn = document.getElementById('openAddModalBtn');
-    if (openAddModalBtn) {
-      openAddModalBtn.addEventListener('click', () => {
-        clearForm();
-        editId = null;
-        document.getElementById('modalTitle').innerText = 'Add Appointment';
-        modal.classList.add('active');
-      });
-    }
+    let html = `<div class="stats-dashboard"><div class="stat-tile"><i class="fa-regular fa-calendar"></i><div class="stat-number">${stats.month}</div><span>month total</span></div><div class="stat-tile"><i class="fa-regular fa-clock" style="color:#f97316;"></i><div class="stat-number">${data.filter(d=>d.status==='Pending').length}</div><span>pending</span></div><div class="stat-tile"><i class="fa-regular fa-circle-xmark" style="color:#ef4444;"></i><div class="stat-number">${data.filter(d=>d.status==='Cancelled').length}</div><span>cancelled</span></div><div class="stat-tile"><i class="fa-regular fa-star" style="color:#22c55e;"></i><div class="stat-number">${satThisMonth}</div><span>SAT confirmed</span></div></div>
+    <div class="commission-panel ${commissionEarned?'commission-earned':''}"><div class="commission-left"><h3><i class="fas fa-circle-dollar-to-slot"></i> SAT commission</h3><p>✅ Only SAT + Confirmed</p><p>🎯 Target: 8 SAT = 6,000 PHP</p></div><div class="commission-highlight" data-tooltip="${getCommissionBreakdown()}"><span>${commission} PHP</span><small>this month</small></div><div class="progress-wrapper"><div class="progress-label" style="display:flex; justify-content:space-between;"><span>✅ SAT confirmed</span><span>${satThisMonth} / 8</span></div><div class="progress-bg"><div class="progress-fill ${commissionEarned?'earned':''}" style="width:${progressPercent}%;"></div></div>${commissionEarned?`<div style="margin-top:0.3rem; color:#22c55e;">✓ Commission active: ${satThisMonth} × 750 PHP = ${commission} PHP</div>`:`<div style="margin-top:0.3rem; color:#f97316;">${8-satThisMonth} more to earn</div>`}</div></div>
+    <div class="kpi-grid"><div class="kpi-item"><i class="fa-regular fa-calendar-check"></i><h2>${stats.week}</h2><p>this week</p></div><div class="kpi-item"><i class="fa-regular fa-calendar"></i><h2>${stats.month}</h2><p>this month</p></div><div class="kpi-item"><i class="fa-regular fa-calendar-plus"></i><h2>${stats.year}</h2><p>this year</p></div></div>
+    <div class="feature-bar"><div class="feature-badge"><i class="fa-regular fa-star"></i> top source: ${topSource}</div><div class="feature-badge"><i class="fa-regular fa-fire"></i> streak: ${streak}</div><div class="filter-group" id="filterGroup"><button class="${currentFilter==='all'?'active-filter':''}" data-filter="all">All</button>${Object.keys(STATUS_CONFIG).map(s=>`<button class="${currentFilter===s?'active-filter':''}" data-filter="${s}">${STATUS_CONFIG[s].label}</button>`).join('')}</div><div class="action-button-group"><button class="btn-primary" id="openAddModalBtn"><i class="fa-solid fa-plus"></i> New</button><button class="btn-secondary" onclick="exportCSV()"><i class="fa-regular fa-file-excel"></i> Export</button><button class="btn-secondary" onclick="clearFilter()"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button></div></div>
+    <div class="table-wrapper"><table><thead><tr><th>status</th><th>client</th><th>date/time</th><th>industry</th><th>source</th><th>meeting</th><th>crm</th><th>notes</th><th>actions</th></tr></thead><tbody>${tableRows||'<tr><td colspan="9" style="text-align:center; padding:2rem;">No appointments</td></tr>'}</tbody></table></div>`;
+    pageContainer.innerHTML = html; pageTitle.innerHTML = '<i class="fas fa-chart-line" style="color:#f97316;"></i> Trusted Commission Hub';
+    document.querySelectorAll('#filterGroup button').forEach(btn=>{ btn.addEventListener('click',function(){ document.querySelectorAll('#filterGroup button').forEach(b=>b.classList.remove('active-filter')); this.classList.add('active-filter'); currentFilter=this.dataset.filter; renderAppointmentsPage(); }); });
+    document.getElementById('openAddModalBtn')?.addEventListener('click',()=>{ clearForm(); editId=null; document.getElementById('modalTitle').innerText='Add Appointment'; modal.classList.add('active'); });
   }
-
-  function renderAnalyticsPage() {
-    const monthlyData = getMonthlyData();
-    const total = data.length;
-    const confirmed = data.filter(d => d.status === 'Confirmed').length;
-    const pending = data.filter(d => d.status === 'Pending').length;
-    const cancelled = data.filter(d => d.status === 'Cancelled').length;
-    const satConfirmed = getSATCountThisMonth();
-    const satTotal = data.filter(d => d.source === 'SAT').length;
-    const trustScore = calculateTrustScore();
-
-    const html = `
-      <div class="trust-score">
-        <h3><i class="fa-regular fa-shield"></i> Data Trust Score: ${trustScore.score}%</h3>
-        <div class="trust-meter">
-          <div class="trust-fill" style="width: ${trustScore.score}%;"></div>
-        </div>
-        ${trustScore.issues.length > 0 ? 
-          `<p><i class="fa-regular fa-circle-exclamation"></i> Issues: ${trustScore.issues.join(', ')}</p>` : 
-          '<p><i class="fa-regular fa-circle-check"></i> All data is reliable</p>'
-        }
-      </div>
-      <div class="analytics-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem;">
-        <div class="analytics-card"><h3>Total</h3><div class="value">${total}</div></div>
-        <div class="analytics-card"><h3>Confirmed</h3><div class="value">${confirmed}</div></div>
-        <div class="analytics-card"><h3>Pending</h3><div class="value">${pending}</div></div>
-        <div class="analytics-card"><h3>Cancelled</h3><div class="value">${cancelled}</div></div>
-        <div class="analytics-card"><h3>SAT this month</h3><div class="value">${satConfirmed}</div></div>
-        <div class="analytics-card"><h3>Total SAT</h3><div class="value">${satTotal}</div></div>
-      </div>
-      <div class="chart-container">
-        <canvas id="analyticsChart" style="height:250px; width:100%;"></canvas>
-      </div>
-    `;
-
-    pageContainer.innerHTML = html;
-    pageTitle.innerHTML = '<i class="fa-regular fa-chart-bar" style="color:#f97316;"></i> Analytics & Trust Metrics';
-
-    const canvas = document.getElementById('analyticsChart');
-    if (canvas) {
-      if (analyticsChart) analyticsChart.destroy();
-      canvas.style.height = '250px';
-      canvas.style.width = '100%';
-      analyticsChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-          datasets: [{
-            label: "Appointments",
-            data: monthlyData,
-            backgroundColor: "#f97316",
-            borderRadius: 6
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-      });
-    }
-  }
-
-  function renderAlertsPage() {
-    const upcoming = data.filter(a => new Date(a.date) > new Date() && a.status !== 'Confirmed').length;
-    const unverifiedSAT = data.filter(a => a.source === 'SAT' && !a.verified).length;
-    
-    pageContainer.innerHTML = `
-      <div style="padding:2rem; text-align:center;">
-        <i class="fa-regular fa-bell" style="font-size:4rem; color:#f97316;"></i>
-        <h2 style="margin:1rem 0;">Smart Alerts</h2>
-        <div class="analytics-card" style="max-width:300px; margin:0 auto 1rem;">
-          <h3>Upcoming non‑confirmed</h3>
-          <div class="value">${upcoming}</div>
-        </div>
-        <div class="analytics-card" style="max-width:300px; margin:0 auto;">
-          <h3>Unverified SAT sources</h3>
-          <div class="value">${unverifiedSAT}</div>
-        </div>
-      </div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-bell"></i> Smart Alerts';
-  }
-
-  function renderSourcesPage() {
-    const freq = {};
-    data.forEach(d => { if (d.source) freq[d.source] = (freq[d.source] || 0) + 1; });
-    const entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-    pageContainer.innerHTML = `
-      <div style="padding:2rem;">
-        <h2 style="margin-bottom:1.5rem;">Top Lead Sources</h2>
-        ${entries.map(([s,c]) => `
-          <div style="background:white; margin:0.5rem 0; padding:1rem 1.5rem; border-radius:3rem; display:flex; justify-content:space-between; border:1px solid #edf2f7;">
-            <span>${s}</span> <strong>${c}</strong>
-          </div>
-        `).join('')}
-      </div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-star"></i> Top Sources';
-  }
-
-  function renderNoshowPage() {
-    const noshows = data.filter(d => d.status === 'Pending');
-    pageContainer.innerHTML = `
-      <div style="padding:2rem;">
-        <h2 style="margin-bottom:1.5rem;">No‑show guard (Pending)</h2>
-        ${noshows.length ? noshows.map(n => `
-          <div style="background:white; padding:1rem 1.5rem; border-radius:3rem; margin:0.5rem 0; border:1px solid #edf2f7;">
-            🔸 ${n.client} — ${n.date} ${n.notes ? '· ' + n.notes : ''}
-          </div>
-        `).join('') : '<p class="analytics-card" style="text-align:center;">All clear, no pending.</p>'}
-      </div>`;
-    pageTitle.innerHTML = '<i class="fa-regular fa-clock"></i> No‑show guard';
-  }
-
-  function renderAuditPage() {
-    pageContainer.innerHTML = `
-      <div style="padding:1rem;">
-        <h2 style="margin-bottom:1.5rem;">Audit Trail</h2>
-        <div class="audit-trail">
-          ${auditLog.length === 0 ? '<p>No audit entries yet</p>' : ''}
-          ${auditLog.slice(0, 50).map(entry => {
-            const date = new Date(entry.timestamp);
-            return `
-              <div class="audit-entry">
-                <span class="audit-time">${date.toLocaleString()}</span>
-                <span><strong>${entry.action}</strong></span>
-                <span>${entry.details}</span>
-              </div>
-            `;
-          }).join('')}
-        </div>
-        <button class="btn-secondary" onclick="exportAuditLog()" style="margin-top:1rem;">
-          <i class="fa-regular fa-file-excel"></i> Export Audit Log
-        </button>
-      </div>
-    `;
-    pageTitle.innerHTML = '<i class="fa-regular fa-clock"></i> Audit Trail';
-  }
-
-  function renderCurrentPage() {
-    if (currentPage === 'appointments') renderAppointmentsPage();
-    else if (currentPage === 'analytics') renderAnalyticsPage();
-    else if (currentPage === 'alerts') renderAlertsPage();
-    else if (currentPage === 'sources') renderSourcesPage();
-    else if (currentPage === 'noshow') renderNoshowPage();
-    else if (currentPage === 'audit') renderAuditPage();
-    
-    // Log commission status for debugging
-    console.log('Current month SAT confirmed:', getSATCountThisMonth());
-    console.log('Commission:', computeCommission());
-  }
-
-  function setActiveNav(page) {
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    const navBtn = document.getElementById(`nav-${page}`);
-    if (navBtn) navBtn.classList.add('active');
-    currentPage = page;
-    renderCurrentPage();
-  }
-
-  document.getElementById('nav-appointments').addEventListener('click', ()=> setActiveNav('appointments'));
-  document.getElementById('nav-analytics').addEventListener('click', ()=> setActiveNav('analytics'));
-  document.getElementById('nav-alerts').addEventListener('click', ()=> setActiveNav('alerts'));
-  document.getElementById('nav-sources').addEventListener('click', ()=> setActiveNav('sources'));
-  document.getElementById('nav-noshow').addEventListener('click', ()=> setActiveNav('noshow'));
-  document.getElementById('nav-audit').addEventListener('click', ()=> setActiveNav('audit'));
-
-  window.exportCSV = () => {
-    const csv = "Client,Date,Industry,Source,Status,CRM,Notes,Verified\n" + 
-      data.map(a => `${a.client},${a.date},${a.industry},${a.source},${a.status},${a.crm},${a.notes},${a.verified}`).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "appointments.csv";
-    a.click();
-    addAuditEntry('EXPORT', 'Exported data to CSV');
-    showToast("CSV exported");
-  };
-
-  window.exportAuditLog = () => {
-    const csv = "Timestamp,Action,Details,Appointment ID\n" + 
-      auditLog.map(a => `${a.timestamp},${a.action},${a.details},${a.appointmentId || ''}`).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "audit_log.csv";
-    a.click();
-    showToast("Audit log exported");
-  };
-
-  window.clearFilter = () => {
-    currentFilter = "all";
-    if (currentPage === 'appointments') renderAppointmentsPage();
-  };
-
-  // Initialize
-  setActiveNav('appointments');
-  updateTrustScore();
-  
-  // Test commission logic on load
-  console.log('=== COMMISSION LOGIC TEST ===');
-  console.log(`SAT Confirmed this month: ${getSATCountThisMonth()}`);
-  console.log(`Commission: ${computeCommission()} PHP`);
-  console.log(`Breakdown: ${getCommissionBreakdown()}`);
-  console.log('============================');
+  function clearForm(){ document.getElementById("client").value=""; document.getElementById("dateTime").value=""; document.getElementById("industry").value=""; document.getElementById("source").value=""; document.getElementById("status").value="Pending"; document.getElementById("crm").value=""; document.getElementById("meetingPlatform").value=""; document.getElementById("notes").value=""; document.getElementById("validationMessage").style.display='none'; }
+  function renderAnalyticsPage(){ let monthlyData=getMonthlyData(); let html=`<div class="trust-score"><h3><i class="fa-regular fa-shield"></i> Data Trust Score: ${calculateTrustScore().score}%</h3><div class="trust-meter"><div class="trust-fill" style="width: ${calculateTrustScore().score}%;"></div></div></div><div class="analytics-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;"><div class="analytics-card"><h3>Total</h3><div class="value">${data.length}</div></div><div class="analytics-card"><h3>Confirmed</h3><div class="value">${data.filter(d=>d.status==='Confirmed').length}</div></div><div class="analytics-card"><h3>SAT this month</h3><div class="value">${getSATCountThisMonth()}</div></div></div><div class="chart-container"><canvas id="analyticsChart" style="height:250px; width:100%;"></canvas></div>`; pageContainer.innerHTML=html; pageTitle.innerHTML='<i class="fa-regular fa-chart-bar"></i> Analytics'; let canvas=document.getElementById('analyticsChart'); if(canvas){ if(analyticsChart) analyticsChart.destroy(); canvas.style.height='250px'; analyticsChart=new Chart(canvas,{type:'bar',data:{labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],datasets:[{label:"Appointments",data:monthlyData,backgroundColor:"#f97316",borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}}); } }
+  function renderAlertsPage(){ let upcoming=data.filter(a=>new Date(a.date)>new Date() && a.status!=='Confirmed').length; let unverified=data.filter(a=>a.source==='SAT' && !a.verified).length; pageContainer.innerHTML=`<div style="padding:2rem;text-align:center;"><i class="fa-regular fa-bell" style="font-size:4rem;color:#f97316;"></i><h2>Smart Alerts</h2><div class="analytics-card" style="max-width:300px;margin:1rem auto;"><h3>Upcoming non‑confirmed</h3><div class="value">${upcoming}</div></div><div class="analytics-card" style="max-width:300px;margin:auto;"><h3>Unverified SAT</h3><div class="value">${unverified}</div></div></div>`; pageTitle.innerHTML='<i class="fa-regular fa-bell"></i> Smart Alerts'; }
+  function renderSourcesPage(){ let freq={}; data.forEach(d=>{if(d.source) freq[d.source]=(freq[d.source]||0)+1;}); let entries=Object.entries(freq).sort((a,b)=>b[1]-a[1]); pageContainer.innerHTML=`<div style="padding:2rem;"><h2>Top Lead Sources</h2>${entries.map(([s,c])=>`<div style="background:white;margin:0.5rem 0;padding:1rem 1.5rem;border-radius:3rem;display:flex;justify-content:space-between;"><span>${s}</span> <strong>${c}</strong></div>`).join('')}</div>`; pageTitle.innerHTML='<i class="fa-regular fa-star"></i> Top Sources'; }
+  function renderNoshowPage(){ let pending=data.filter(d=>d.status==='Pending'); pageContainer.innerHTML=`<div style="padding:2rem;"><h2>No‑show guard (Pending)</h2>${pending.length?pending.map(n=>`<div style="background:white;padding:1rem 1.5rem;border-radius:3rem;margin:0.5rem 0;"><i class="fa-regular fa-clock"></i> ${n.client} — ${new Date(n.date).toLocaleString()} ${n.notes?'· '+n.notes:''}</div>`).join(''):'<p>All clear, no pending.</p>'}</div>`; pageTitle.innerHTML='<i class="fa-regular fa-clock"></i> No‑show guard'; }
+  function renderAuditPage(){ pageContainer.innerHTML=`<div style="padding:1rem;"><h2>Audit Trail</h2><div class="audit-trail">${auditLog.length===0?'<p>No entries</p>':auditLog.slice(0,50).map(e=>`<div class="audit-entry"><span class="audit-time">${new Date(e.timestamp).toLocaleString()}</span><span><strong>${e.action}</strong></span><span>${e.details}</span></div>`).join('')}</div><button class="btn-secondary" onclick="exportAuditLog()">Export Audit Log</button></div>`; pageTitle.innerHTML='<i class="fa-regular fa-clock"></i> Audit Trail'; }
+  function renderCurrentPage(){ if(currentPage==='appointments') renderAppointmentsPage(); else if(currentPage==='analytics') renderAnalyticsPage(); else if(currentPage==='alerts') renderAlertsPage(); else if(currentPage==='sources') renderSourcesPage(); else if(currentPage==='noshow') renderNoshowPage(); else if(currentPage==='audit') renderAuditPage(); }
+  function setActiveNav(page){ document.querySelectorAll('.nav-item').forEach(btn=>btn.classList.remove('active')); let navBtn=document.getElementById(`nav-${page}`); if(navBtn) navBtn.classList.add('active'); currentPage=page; renderCurrentPage(); }
+  document.getElementById('nav-appointments').addEventListener('click',()=>setActiveNav('appointments')); document.getElementById('nav-analytics').addEventListener('click',()=>setActiveNav('analytics')); document.getElementById('nav-alerts').addEventListener('click',()=>setActiveNav('alerts')); document.getElementById('nav-sources').addEventListener('click',()=>setActiveNav('sources')); document.getElementById('nav-noshow').addEventListener('click',()=>setActiveNav('noshow')); document.getElementById('nav-audit').addEventListener('click',()=>setActiveNav('audit'));
+  window.exportCSV=()=>{ let csv="Client,Date,Industry,Source,Status,Meeting,CRM,Notes\n"+data.map(a=>`${a.client},${a.date},${a.industry||''},${a.source||''},${a.status},${a.meeting||''},${a.crm||''},${a.notes||''}`).join('\n'); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="appointments.csv"; a.click(); addAuditEntry('EXPORT','Exported CSV'); showToast("CSV exported"); };
+  window.exportAuditLog=()=>{ let csv="Timestamp,Action,Details,AppointmentID\n"+auditLog.map(a=>`${a.timestamp},${a.action},${a.details},${a.appointmentId||''}`).join('\n'); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="audit_log.csv"; a.click(); showToast("Audit exported"); };
+  window.clearFilter=()=>{ currentFilter="all"; if(currentPage==='appointments') renderAppointmentsPage(); };
+  function triggerNewAppointmentTemplate(){ clearForm(); document.getElementById("client").value = "Sarang Shah"; document.getElementById("dateTime").value = "2026-04-09T15:00"; document.getElementById("industry").value = "Marketing"; document.getElementById("source").value = "SAT"; document.getElementById("status").value = "Confirmed"; document.getElementById("crm").value = "https://app.close.com/lead/lead_kQhiWXQusO4Os5NeHV5mIxwJ97koVoPPNUsz2IMBSRY/"; document.getElementById("meetingPlatform").value = "Teams"; document.getElementById("notes").value = "Meeting with @Toby - SMM Chat discussion. Email: sarang@mamou-mani.com | Phone: +447459472223"; editId = null; document.getElementById('modalTitle').innerText = 'Add Appointment (Template Pre-filled)'; document.getElementById("validationMessage").style.display = 'none'; modal.classList.add('active'); }
+  const style = document.createElement('style'); style.textContent = `.floating-trigger { position: fixed; bottom: 24px; right: 24px; background: #f97316; color: white; border-radius: 60px; padding: 14px 24px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); cursor: pointer; z-index: 1100; font-weight: bold; border: none; transition: 0.2s; } .floating-trigger:hover { transform: scale(1.03); background: #ea580c; } @media (max-width: 780px) { .floating-trigger { bottom: 16px; right: 16px; padding: 10px 18px; font-size: 0.9rem; } }`; document.head.appendChild(style); const floatingBtn = document.createElement('button'); floatingBtn.className = 'floating-trigger'; floatingBtn.innerHTML = '<i class="fa-regular fa-calendar-plus" style="font-size:1.3rem;"></i> + New Appointment (Sarang Shah)'; floatingBtn.onclick = triggerNewAppointmentTemplate; document.body.appendChild(floatingBtn);
+  setActiveNav('appointments'); updateTrustScore();
 </script>
 </body>
 </html>
